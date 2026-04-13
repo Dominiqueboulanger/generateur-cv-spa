@@ -7,35 +7,23 @@
     <style>
         :root { --blue: #3498db; --bg: #f4f7f6; --text: #2c3e50; --green: #27ae60; --orange: #e67e22; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; gap: 20px; color: var(--text); }
-        
-        /* Interface d'édition */
         .form-side { width: 40%; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); height: 95vh; overflow-y: auto; }
         .preview-side { width: 60%; background: #525659; padding: 20px; display: flex; justify-content: center; height: 95vh; overflow-y: auto; border-radius: 8px; }
-        
-        /* Style du CV */
         #cv-paper { width: 210mm; min-height: 297mm; background: white; padding: 12mm; box-sizing: border-box; box-shadow: 0 0 20px rgba(0,0,0,0.5); font-size: 11pt; line-height: 1.3; }
-        
         h2 { font-size: 1.1em; color: var(--blue); border-bottom: 2px solid var(--blue); margin: 15px 0 8px 0; text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.9em; }
+        .input-group { display: flex; gap: 5px; margin-bottom: 8px; }
+        .input-group input { margin-bottom: 0; }
+        .btn-add { background: var(--blue); color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        /* Boutons */
         .btn-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .btn { border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 0.9em; transition: 0.2s; }
         .btn-print { background: var(--green); grid-column: span 2; font-size: 1.1em; padding: 15px; }
         .btn-save { background: var(--blue); }
         .btn-load { background: var(--orange); }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        
         .tag { background: #e1f0fa; color: var(--blue); padding: 3px 10px; border-radius: 15px; font-size: 10px; margin: 2px; display: inline-flex; align-items: center; border: 1px solid var(--blue); }
         .tag b { margin-left: 6px; cursor: pointer; color: #e74c3c; }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { padding: 0; background: white; display: block; }
-            .preview-side { background: white; padding: 0; width: 100%; height: auto; overflow: visible; }
-            #cv-paper { box-shadow: none; margin: 0; width: 100%; height: 297mm; padding: 10mm; font-size: 10pt; }
-        }
+        @media print { .no-print { display: none !important; } body { padding: 0; background: white; display: block; } .preview-side { background: white; padding: 0; width: 100%; height: auto; overflow: visible; } #cv-paper { box-shadow: none; margin: 0; width: 100%; height: 297mm; padding: 10mm; font-size: 10pt; } }
     </style>
 </head>
 <body>
@@ -44,10 +32,7 @@
     <h2 style="margin-top:0;">👤 État Civil & Photo</h2>
     <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(event)">
     <input type="text" id="nom" placeholder="PRÉNOM NOM" oninput="update()">
-    <div class="grid">
-        <input type="text" id="tel" placeholder="Téléphone" oninput="update()">
-        <input type="text" id="email" placeholder="Email" oninput="update()">
-    </div>
+    <div class="grid"><input type="text" id="tel" placeholder="Téléphone" oninput="update()"><input type="text" id="email" placeholder="Email" oninput="update()"></div>
     <textarea id="adresse" placeholder="Adresse" oninput="update()"></textarea>
 
     <h2>🎯 Métier & Accroche</h2>
@@ -59,11 +44,21 @@
     </select>
     <textarea id="profil" placeholder="Phrase d'accroche..." oninput="update()"></textarea>
 
-    <h2>🛠️ Référentiel Compétences</h2>
+    <h2>🛠️ Compétences Techniques</h2>
     <select id="selTech" onchange="addTag('tech', this)"></select>
-    <div id="tagsTech"></div>
-    <select id="selHum" onchange="addTag('hum', this)" style="margin-top:5px;"></select>
-    <div id="tagsHum"></div>
+    <div class="input-group">
+        <input type="text" id="customTech" placeholder="Ou tapez une autre compétence...">
+        <button class="btn-add" onclick="addCustomTag('tech')">+</button>
+    </div>
+    <div id="tagsTech" style="margin-bottom:10px;"></div>
+
+    <h2>🤝 Qualités Humaines</h2>
+    <select id="selHum" onchange="addTag('hum', this)"></select>
+    <div class="input-group">
+        <input type="text" id="customHum" placeholder="Ou tapez une autre qualité...">
+        <button class="btn-add" onclick="addCustomTag('hum')">+</button>
+    </div>
+    <div id="tagsHum" style="margin-bottom:10px;"></div>
 
     <h2>💼 Expériences (3 max)</h2>
     <div id="exp-inputs">
@@ -118,7 +113,7 @@
         const m = document.getElementById('metier').value;
         const sT = document.getElementById('selTech');
         const sH = document.getElementById('selHum');
-        sT.innerHTML = sH.innerHTML = '<option value="">-- Ajouter une ligne --</option>';
+        sT.innerHTML = sH.innerHTML = '<option value="">-- Sélectionner dans la liste --</option>';
         if(m && repoData[m]) {
             repoData[m].Techniques.forEach(t => sT.innerHTML += `<option value="${t}">${t}</option>`);
             repoData[m].Humaines.forEach(h => sH.innerHTML += `<option value="${h}">${h}</option>`);
@@ -134,52 +129,43 @@
         el.value = "";
     }
 
-    // SAUVEGARDE ET CHARGEMENT
+    function addCustomTag(type) {
+        const inputId = type === 'tech' ? 'customTech' : 'customHum';
+        const val = document.getElementById(inputId).value.trim();
+        if(val && !selectedSkills[type].includes(val)) {
+            selectedSkills[type].push(val);
+            document.getElementById(inputId).value = "";
+            update();
+        }
+    }
+
     function saveData() {
         const fullData = {
-            nom: document.getElementById('nom').value,
-            tel: document.getElementById('tel').value,
-            email: document.getElementById('email').value,
-            adresse: document.getElementById('adresse').value,
-            metier: document.getElementById('metier').value,
-            profil: document.getElementById('profil').value,
-            interets: document.getElementById('interets').value,
-            tech: selectedSkills.tech,
-            hum: selectedSkills.hum,
+            nom: document.getElementById('nom').value, tel: document.getElementById('tel').value,
+            email: document.getElementById('email').value, adresse: document.getElementById('adresse').value,
+            metier: document.getElementById('metier').value, profil: document.getElementById('profil').value,
+            interets: document.getElementById('interets').value, tech: selectedSkills.tech, hum: selectedSkills.hum,
             exp: Array.from(document.querySelectorAll('.exp-in')).map(i => i.value),
-            edu: Array.from(document.querySelectorAll('.edu-in')).map(i => i.value),
-            photo: photoData
+            edu: Array.from(document.querySelectorAll('.edu-in')).map(i => i.value), photo: photoData
         };
         const blob = new Blob([JSON.stringify(fullData)], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `cv_${fullData.nom.replace(/\s/g, '_') || 'brouillon'}.json`;
-        a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `cv_${fullData.nom.replace(/\s/g, '_') || 'brouillon'}.json`; a.click();
     }
 
     function loadData(event) {
         const reader = new FileReader();
         reader.onload = (e) => {
             const d = JSON.parse(e.target.result);
-            document.getElementById('nom').value = d.nom || '';
-            document.getElementById('tel').value = d.tel || '';
-            document.getElementById('email').value = d.email || '';
-            document.getElementById('adresse').value = d.adresse || '';
-            document.getElementById('metier').value = d.metier || '';
-            document.getElementById('profil').value = d.profil || '';
+            document.getElementById('nom').value = d.nom || ''; document.getElementById('tel').value = d.tel || '';
+            document.getElementById('email').value = d.email || ''; document.getElementById('adresse').value = d.adresse || '';
+            document.getElementById('metier').value = d.metier || ''; document.getElementById('profil').value = d.profil || '';
             document.getElementById('interets').value = d.interets || '';
-            selectedSkills.tech = d.tech || [];
-            selectedSkills.hum = d.hum || [];
+            selectedSkills.tech = d.tech || []; selectedSkills.hum = d.hum || [];
             photoData = d.photo || '';
-            
-            const expIn = document.querySelectorAll('.exp-in');
-            d.exp.forEach((val, i) => { if(expIn[i]) expIn[i].value = val; });
-            const eduIn = document.querySelectorAll('.edu-in');
-            d.edu.forEach((val, i) => { if(eduIn[i]) eduIn[i].value = val; });
-
-            loadSkills(); // Recharge les menus déroulants
-            update();
+            const expIn = document.querySelectorAll('.exp-in'); d.exp.forEach((val, i) => { if(expIn[i]) expIn[i].value = val; });
+            const eduIn = document.querySelectorAll('.edu-in'); d.edu.forEach((val, i) => { if(eduIn[i]) eduIn[i].value = val; });
+            loadSkills(); update();
         };
         reader.readAsText(event.target.files[0]);
     }
@@ -204,17 +190,13 @@
                 <div><h2>Compétences</h2><ul style="padding-left:15px; font-size:0.85em;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul></div>
                 <div><h2>Qualités</h2><div style="display:flex; flex-wrap:wrap; gap:5px;">${selectedSkills.hum.map(h => `<span style="border:1px solid #ddd; padding:3px 8px; border-radius:4px; font-size:0.8em;">${h}</span>`).join('')}</div></div>
             </div>
-            <h2>Expériences Professionnelles</h2>
-            <div style="font-size:0.9em;">${experiences.map(e => `<div>• ${e}</div>`).join('')}</div>
-            <h2>Formations</h2>
-            <div style="font-size:0.9em;">${formations.map(f => `<div>• ${f}</div>`).join('')}</div>
+            <h2>Expériences Professionnelles</h2><div style="font-size:0.9em;">${experiences.map(e => `<div>• ${e}</div>`).join('')}</div>
+            <h2>Formations</h2><div style="font-size:0.9em;">${formations.map(f => `<div>• ${f}</div>`).join('')}</div>
             ${document.getElementById('interets').value ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em;">${document.getElementById('interets').value}</p>` : ''}
         `;
-        
         document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
         document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
     }
-
     window.onload = init;
 </script>
 </body>
