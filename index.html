@@ -3,265 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur CV SAP Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Assistant CV SAP Professionnel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1e40af;
-            --bg: #f8fafc;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --card-bg: #ffffff;
-            --border: #e2e8f0;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-dark);
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* --- LAYOUT --- */
-        .editor-side {
-            width: 50%;
-            height: 100%;
-            overflow-y: auto;
-            padding: 30px;
-            box-sizing: border-box;
-            border-right: 1px solid var(--border);
-        }
-
-        .preview-side {
-            width: 50%;
-            height: 100%;
-            background: #525659;
-            display: flex;
-            justify-content: center;
-            overflow-y: auto;
-            padding: 40px 0;
-        }
-
-        /* --- FORMULAIRE --- */
-        .card {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        h2 { font-size: 1.1em; margin-top: 0; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        :root { --primary: #3498db; --dark: #2c3e50; --bg: #f4f7f6; --success: #27ae60; --danger: #e74c3c; --secondary: #95a5a6; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--dark); margin: 0; padding: 20px; }
+        .container { max-width: 850px; margin: 0 auto; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 4px solid var(--primary); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label { display: block; font-weight: 700; margin-bottom: 5px; font-size: 0.85em; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; margin-bottom: 10px; }
+        .btn { border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; color: white; display: inline-flex; align-items: center; gap: 8px; justify-content: center; text-decoration: none; }
+        .btn-primary { background: var(--primary); }
+        .btn-success { background: var(--success); }
+        .btn-secondary { background: var(--secondary); }
+        .tag { background: #e1f0fa; color: var(--primary); padding: 5px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; margin: 3px; font-size: 12px; border: 1px solid var(--primary); font-weight: 600; }
+        #photo-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--primary); margin-top: 5px; }
         
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        input, select, textarea {
-            width: 100%; padding: 12px; border: 1px solid var(--border);
-            border-radius: 6px; font-family: inherit; margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .btn {
-            padding: 10px 18px; border-radius: 6px; cursor: pointer;
-            font-weight: 600; border: none; transition: 0.2s;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-danger { background: #fee2e2; color: #dc2626; font-size: 12px; }
-
-        .tag {
-            background: #eff6ff; color: var(--primary); padding: 4px 10px;
-            border-radius: 4px; font-size: 12px; font-weight: 500;
-            display: inline-flex; align-items: center; gap: 5px; margin: 3px;
-            border: 1px solid #dbeafe;
-        }
-
-        /* --- APERÇU DU CV (Simulé A4) --- */
-        #cv-preview {
-            width: 210mm;
-            min-height: 297mm;
-            background: white;
-            padding: 15mm;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            box-sizing: border-box;
-        }
-
-        /* Styles spécifiques au contenu du CV */
-        .cv-header { display: flex; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 15px; }
-        .cv-photo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-right: 20px; border: 2px solid var(--primary); }
-        .cv-title { background: var(--primary); color: white; padding: 6px 12px; display: inline-block; border-radius: 4px; font-weight: bold; margin: 10px 0; }
-        .cv-section-title { color: var(--primary); border-bottom: 1px solid #eee; text-transform: uppercase; font-size: 14px; margin: 15px 0 10px 0; letter-spacing: 1px; }
-
+        #cv-to-print { display: none; }
         @media print {
-            .editor-side { display: none; }
-            .preview-side { width: 100%; padding: 0; background: white; }
-            #cv-preview { box-shadow: none; width: 100%; margin: 0; }
+            .no-print { display: none !important; }
+            @page { margin: 0; size: A4; }
+            #cv-to-print { display: block !important; width: 210mm; height: 297mm; padding: 12mm; background: white; box-sizing: border-box; }
+            h2 { color: #3498db !important; border-bottom: 2px solid #3498db; text-transform: uppercase; font-size: 1.05em; margin-top: 15px; }
         }
     </style>
 </head>
 <body>
 
-<div class="editor-side no-print">
-    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1 style="font-size: 1.5em; margin: 0;">Assistant CV SAP</h1>
-        <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer PDF</button>
+<div class="container no-print">
+    <header style="text-align: center; margin-bottom: 20px;">
+        <h1>Mon Assistant CV SAP</h1>
+        <p>Générez votre CV professionnel en quelques clics</p>
     </header>
 
     <div class="card">
-        <h2>👤 État Civil</h2>
-        <input type="file" accept="image/*" onchange="handlePhoto(event)">
+        <label>👤 État Civil</label>
         <div class="grid-2">
-            <input type="text" id="nom" placeholder="NOM Prénom" oninput="updatePreview()">
-            <input type="text" id="tel" placeholder="Téléphone" oninput="updatePreview()">
+            <div><input type="file" accept="image/*" onchange="handlePhoto(event)"><img id="photo-preview"></div>
+            <input type="text" id="nom" placeholder="NOM Prénom" oninput="saveData()">
         </div>
-        <input type="email" id="email" placeholder="Email" oninput="updatePreview()">
-        <textarea id="adresse" placeholder="Adresse" oninput="updatePreview()"></textarea>
+        <div class="grid-2">
+            <input type="text" id="tel" placeholder="Téléphone" oninput="saveData()">
+            <input type="email" id="email" placeholder="Email" oninput="saveData()">
+        </div>
+        <textarea id="adresse" placeholder="Adresse complète" oninput="saveData()"></textarea>
     </div>
 
     <div class="card">
-        <h2>🎯 Métier & Accroche</h2>
+        <label>🎯 Métier visé</label>
         <select id="select-metier" onchange="changerMetier()">
-            <option value="Garde">Assistant parental</option>
+            <option value="">-- Sélectionnez votre métier --</option>
+            <option value="Garde d'enfants">Assistant parental (Garde d'enfants)</option>
             <option value="ADVD">Assistant de vie dépendance (ADVD)</option>
-            <option value="EF">Employé familial (EF)</option>
+            <option value="Employé Familial">Employé familial (EF)</option>
         </select>
-        <textarea id="profil" placeholder="Décrivez votre motivation..." oninput="updatePreview()" rows="3"></textarea>
+        <textarea id="profil" oninput="saveData()" placeholder="Accroche professionnelle..."></textarea>
     </div>
 
     <div class="card">
-        <h2>💼 Expériences</h2>
-        <div id="editor-exp"></div>
-        <button class="btn btn-primary" onclick="ajouterExperience()" style="width: 100%; font-size: 13px;">+ Ajouter une expérience</button>
+        <label>🛠️ Compétences (issues du référentiel)</label>
+        <select id="list-comp-suggest" onchange="ajouterItem('compTech', 'list-comp-suggest')"></select>
+        <div id="container-compTech"></div>
+        <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
+        <label>🤝 Qualités & Savoir-être</label>
+        <select id="list-hum-suggest" onchange="ajouterItem('compHum', 'list-hum-suggest')"></select>
+        <div id="container-compHum"></div>
     </div>
 
-    <div class="card">
-        <h2>🛠️ Compétences techniques</h2>
-        <select id="suggest-comp" onchange="ajouterTag('compTech', this)"></select>
-        <div id="tags-compTech" style="margin-top: 10px;"></div>
+    <div class="card" style="text-align: center;">
+        <button class="btn btn-success" onclick="window.print()" style="width: 100%;">🖨️ GÉNÉRER LE CV (PDF)</button>
     </div>
 </div>
 
-<div class="preview-side">
-    <div id="cv-preview">
-        </div>
-</div>
+<div id="cv-to-print"></div>
 
 <script>
-    // Configuration des données métiers (similaire à ta version mais centralisée)
-    const CONFIG = {
-        "Garde": ["Soins d'hygiène", "Préparation repas bébé", "Activités d'éveil", "Sorties d'école"],
-        "ADVD": ["Aide au lever/coucher", "Aide à la toilette", "Préparation repas adaptés", "Accompagnement extérieur"],
-        "EF": ["Entretien du logement", "Repassage", "Courses", "Cuisine familiale"]
-    };
+    let baseMetiers = {};
+    let userData = { nom: "", tel: "", email: "", adresse: "", profil: "", compTech: [], compHum: [], photoData: "" };
 
-    let state = {
-        nom: "JEANNE DUPONT",
-        tel: "06 00 00 00 00",
-        email: "jeanne@email.com",
-        adresse: "123 Rue de la Paix, 75000 Paris",
-        metier: "Assistant parental",
-        profil: "Professionnelle de la petite enfance avec 5 ans d'expérience, passionnée par le développement des plus jeunes.",
-        photo: "",
-        experiences: [{ titre: "Garde d'enfants", dates: "2021 - 2024", missions: "Garde de 2 enfants de 3 et 5 ans." }],
-        compTech: ["Ponctualité", "Patience"]
-    };
-
-    function handlePhoto(e) {
-        const reader = new FileReader();
-        reader.onload = () => { state.photo = reader.result; updatePreview(); };
-        reader.readAsDataURL(e.target.files[0]);
+    // Chargement du fichier JSON externe
+    async function loadData() {
+        try {
+            const resp = await fetch('competences_sap.json');
+            baseMetiers = await resp.json();
+            console.log("Référentiel chargé !");
+        } catch (e) {
+            console.error("Erreur de chargement du JSON", e);
+        }
     }
 
     function changerMetier() {
-        const sel = document.getElementById('select-metier');
-        state.metier = sel.options[sel.selectedIndex].text;
+        const m = document.getElementById('select-metier').value;
+        const compSelect = document.getElementById('list-comp-suggest');
+        const humSelect = document.getElementById('list-hum-suggest');
         
-        const suggest = document.getElementById('suggest-comp');
-        suggest.innerHTML = '<option value="">-- Ajouter une compétence --</option>';
-        CONFIG[sel.value].forEach(c => {
-            suggest.innerHTML += `<option value="${c}">${c}</option>`;
-        });
-        updatePreview();
+        compSelect.innerHTML = '<option value="">-- Ajouter une compétence --</option>';
+        humSelect.innerHTML = '<option value="">-- Ajouter une qualité --</option>';
+        
+        if(m && baseMetiers[m]) {
+            baseMetiers[m].Techniques.forEach(c => compSelect.innerHTML += `<option value="${c}">${c}</option>`);
+            baseMetiers[m].Humaines.forEach(h => humSelect.innerHTML += `<option value="${h}">${h}</option>`);
+        }
+        saveData();
     }
 
-    function ajouterExperience() {
-        state.experiences.push({ titre: "", dates: "", missions: "" });
-        renderExperienceEditors();
-        updatePreview();
-    }
-
-    function renderExperienceEditors() {
-        const container = document.getElementById('editor-exp');
-        container.innerHTML = state.experiences.map((exp, i) => `
-            <div style="border-bottom: 1px solid #eee; margin-bottom: 10px; padding-bottom: 10px;">
-                <input type="text" placeholder="Poste" value="${exp.titre}" oninput="state.experiences[${i}].titre=this.value; updatePreview()">
-                <input type="text" placeholder="Dates" value="${exp.dates}" oninput="state.experiences[${i}].dates=this.value; updatePreview()">
-                <textarea placeholder="Missions" oninput="state.experiences[${i}].missions=this.value; updatePreview()">${exp.missions}</textarea>
-                <button class="btn btn-danger" onclick="state.experiences.splice(${i},1); renderExperienceEditors(); updatePreview()">Supprimer</button>
-            </div>
-        `).join('');
-    }
-
-    function ajouterTag(type, select) {
-        if(select.value && !state[type].includes(select.value)) {
-            state[type].push(select.value);
+    function ajouterItem(type, selectId) {
+        const val = document.getElementById(selectId).value;
+        if(val && !userData[type].includes(val)) {
+            userData[type].push(val);
             renderTags();
-            updatePreview();
+            saveData();
         }
     }
 
     function renderTags() {
-        document.getElementById('tags-compTech').innerHTML = state.compTech.map(t => `
-            <span class="tag">${t} <b onclick="state.compTech = state.compTech.filter(i => i!=='${t}'); renderTags(); updatePreview()" style="cursor:pointer">✕</b></span>
-        `).join('');
+        ['compTech', 'compHum'].forEach(type => {
+            document.getElementById('container-'+type).innerHTML = userData[type].map(t => 
+                `<span class="tag">${t} <b onclick="userData['${type}']=userData['${type}'].filter(i=>i!=='${t}'); renderTags(); saveData()" style="cursor:pointer">✕</b></span>`
+            ).join('');
+        });
     }
 
-    // FONCTION COEUR : Mise à jour en temps réel
-    function updatePreview() {
-        const cv = document.getElementById('cv-preview');
-        cv.innerHTML = `
-            <div class="cv-header">
-                ${state.photo ? `<img src="${state.photo}" class="cv-photo">` : ''}
+    function handlePhoto(e) {
+        const reader = new FileReader();
+        reader.onload = () => { 
+            userData.photoData = reader.result; 
+            document.getElementById('photo-preview').src = reader.result;
+            document.getElementById('photo-preview').style.display = 'block';
+            saveData(); 
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    }
+
+    function saveData() {
+        const m = document.getElementById('select-metier').value;
+        const printContainer = document.getElementById('cv-to-print');
+        
+        // Mise à jour de la zone d'impression
+        printContainer.innerHTML = `
+            <div style="display:flex; align-items:center; border-bottom:3px solid #3498db; padding-bottom:15px; margin-bottom:20px;">
+                ${userData.photoData ? `<img src="${userData.photoData}" style="width:90px; height:90px; border-radius:50%; margin-right:20px; object-fit:cover; border:2px solid #3498db;">` : ''}
                 <div>
-                    <h1 style="margin:0; text-transform:uppercase;">${state.nom || 'Votre Nom'}</h1>
-                    <div style="font-size:12px; color:var(--text-light); margin-top:5px;">
-                        📞 ${state.tel} | ✉️ ${state.email} <br> 📍 ${state.adresse}
-                    </div>
+                    <h1 style="margin:0; text-transform:uppercase; color:#2c3e50;">${document.getElementById('nom').value || 'NOM PRÉNOM'}</h1>
+                    <p style="margin:5px 0; color:#555;">✉️ ${document.getElementById('email').value} | 📞 ${document.getElementById('tel').value}</p>
+                    <p style="margin:0; font-size:0.9em;">📍 ${document.getElementById('adresse').value}</p>
                 </div>
             </div>
+            <div style="background:#3498db; color:white; padding:8px 20px; display:inline-block; border-radius:4px; font-weight:bold; margin-bottom:20px;">${m || 'Métier Visé'}</div>
+            <p style="font-style:italic; border-left:4px solid #3498db; padding-left:15px; margin-bottom:25px;">${document.getElementById('profil').value}</p>
+            
+            <h2>Compétences Techniques</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                ${userData.compTech.map(c => `<div style="font-size:0.9em;">• ${c}</div>`).join('')}
+            </div>
 
-            <div class="cv-title">${state.metier}</div>
-            <p style="font-size:13px; font-style:italic; border-left:3px solid var(--primary); padding-left:10px; margin:15px 0;">
-                "${state.profil}"
-            </p>
-
-            <div class="cv-section-title">Expériences Professionnelles</div>
-            ${state.experiences.map(e => `
-                <div style="margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px;">
-                        <span>${e.titre}</span> <span>${e.dates}</span>
-                    </div>
-                    <div style="font-size:12px; color:#444;">${e.missions}</div>
-                </div>
-            `).join('')}
-
-            <div class="cv-section-title">Compétences</div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                ${state.compTech.map(t => `<span style="border:1px solid #ddd; padding:4px 8px; border-radius:4px; font-size:11px;">${t}</span>`).join('')}
+            <h2>Qualités & Savoir-être</h2>
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                ${userData.compHum.map(h => `<span style="border:1px solid #ddd; padding:5px 10px; border-radius:5px; font-size:0.85em;">${h}</span>`).join('')}
             </div>
         `;
     }
 
-    // Initialisation
-    window.onload = () => {
-        changerMetier();
-        renderExperienceEditors();
-        renderTags();
-        updatePreview();
-    };
+    window.onload = loadData;
 </script>
 </body>
 </html>
