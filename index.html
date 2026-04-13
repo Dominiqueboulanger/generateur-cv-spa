@@ -5,7 +5,7 @@
     <title>Assistant CV SPE Professionnel - Version Bêta</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #3498db; --bg: #f4f7f6; --text: #2c3e50; --green: #27ae60; --orange: #e67e22; }
+        :root { --blue: #3498db; --bg: #f4f7f6; --text: #2c3e50; --green: #27ae60; --orange: #e67e22; --purple: #9b59b6; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; gap: 20px; color: var(--text); }
         .form-side { width: 40%; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); height: 95vh; overflow-y: auto; }
         .preview-side { width: 60%; background: #525659; padding: 20px; display: flex; justify-content: center; height: 95vh; overflow: auto; border-radius: 8px; }
@@ -16,25 +16,25 @@
         .btn-add { background: var(--blue); color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .btn { border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; }
+        .btn { border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; text-align: center; text-decoration: none; }
         .btn-print { background: var(--green); grid-column: span 2; font-size: 1.1em; padding: 15px; }
         .btn-save { background: var(--blue); }
         .btn-load { background: var(--orange); }
+        .btn-model { background: var(--purple); grid-column: span 2; }
         .tag { background: #e1f0fa; color: var(--blue); padding: 3px 10px; border-radius: 15px; font-size: 10px; margin: 2px; display: inline-flex; align-items: center; border: 1px solid var(--blue); }
         .tag b { margin-left: 6px; cursor: pointer; color: #e74c3c; }
-        
-        /* Styles de rendu CV */
         .cv-item-title { font-weight: 700; display: block; margin-bottom: 2px; }
-        .be-item { font-size: 0.85em; margin-bottom: 4px; display: block; color: var(--text); }
+        .be-item { font-size: 0.85em; margin-bottom: 4px; display: block; }
         .cv-block { margin-bottom: 12px; }
-
         @media print { .no-print { display: none !important; } body { padding: 0; background: white; display: block; } .preview-side { background: white; padding: 0; width: 100%; height: auto; overflow: visible; } #cv-paper { box-shadow: none; margin: 0; width: 100%; height: 297mm; padding: 10mm; font-size: 10pt; } }
     </style>
 </head>
 <body>
 
 <div class="form-side no-print">
-    <h2 style="margin-top:0;">👤 État Civil & Photo</h2>
+    <button class="btn btn-model" onclick="loadRemoteModel()">📋 Charger le modèle (Exemple)</button>
+    
+    <h2>👤 État Civil & Photo</h2>
     <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(event)">
     <input type="text" id="nom" placeholder="Prénom NOM" oninput="update()">
     <div class="grid"><input type="text" id="tel" placeholder="Téléphone" oninput="update()"><input type="text" id="email" placeholder="Email" oninput="update()"></div>
@@ -67,16 +67,16 @@
 
     <h2>💼 Expériences Professionnelles</h2>
     <div id="exp-inputs">
-        <textarea class="exp-in" placeholder="Ex: Garde d'enfants (en gras)&#10;Détails de l'expérience" oninput="update()" rows="2"></textarea>
-        <textarea class="exp-in" placeholder="Ex: Employé de maison (en gras)&#10;Détails de l'expérience" oninput="update()" rows="2"></textarea>
-        <textarea class="exp-in" placeholder="Ex: Stage (en gras)&#10;Détails de l'expérience" oninput="update()" rows="2"></textarea>
+        <textarea class="exp-in" placeholder="Intitulé du poste&#10;Détails" oninput="update()" rows="2"></textarea>
+        <textarea class="exp-in" placeholder="Intitulé du poste&#10;Détails" oninput="update()" rows="2"></textarea>
+        <textarea class="exp-in" placeholder="Intitulé du poste&#10;Détails" oninput="update()" rows="2"></textarea>
     </div>
 
     <h2>🎓 Formations</h2>
     <div id="edu-inputs">
-        <textarea class="edu-in" placeholder="Ex: Titre Professionnel (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
-        <textarea class="edu-in" placeholder="Ex: DELF (en gras)&#10;Organisme et Année" oninput="update()" rows="2"></textarea>
-        <textarea class="edu-in" placeholder="Ex: Autre formation (en gras)&#10;Lieu et Année" oninput="update()" rows="2"></textarea>
+        <textarea class="edu-in" placeholder="Diplôme&#10;École et Année" oninput="update()" rows="2"></textarea>
+        <textarea class="edu-in" placeholder="Diplôme&#10;École et Année" oninput="update()" rows="2"></textarea>
+        <textarea class="edu-in" placeholder="Diplôme&#10;École et Année" oninput="update()" rows="2"></textarea>
     </div>
 
     <h2>🎨 Centres d'intérêt</h2>
@@ -90,9 +90,7 @@
     </div>
 </div>
 
-<div class="preview-side">
-    <div id="cv-paper"></div>
-</div>
+<div class="preview-side"><div id="cv-paper"></div></div>
 
 <script>
     let repoData = {};
@@ -103,7 +101,36 @@
         try {
             const response = await fetch('competences_SPE_par_metier.json?v=' + Date.now());
             repoData = await response.json();
-        } catch(e) { console.error("Erreur JSON"); }
+        } catch(e) { console.error("Erreur JSON référentiel"); }
+        update();
+    }
+
+    async function loadRemoteModel() {
+        if(confirm("Cela remplacera vos saisies actuelles par le modèle type. Continuer ?")) {
+            try {
+                const response = await fetch('modele_cv.json?v=' + Date.now());
+                const d = await response.json();
+                applyDataToForm(d);
+            } catch(e) { alert("Le fichier modele_cv.json est introuvable sur le serveur."); }
+        }
+    }
+
+    function applyDataToForm(d) {
+        document.getElementById('nom').value = d.nom || '';
+        document.getElementById('tel').value = d.tel || '';
+        document.getElementById('email').value = d.email || '';
+        document.getElementById('adresse').value = d.adresse || '';
+        document.getElementById('metier').value = d.metier || '';
+        document.getElementById('profil').value = d.profil || '';
+        document.getElementById('interets').value = d.interets || '';
+        selectedSkills.tech = d.tech || [];
+        selectedSkills.hum = d.hum || [];
+        photoData = d.photo || '';
+        const expIn = document.querySelectorAll('.exp-in');
+        d.exp.forEach((val, i) => { if(expIn[i]) expIn[i].value = val; });
+        const eduIn = document.querySelectorAll('.edu-in');
+        d.edu.forEach((val, i) => { if(eduIn[i]) eduIn[i].value = val; });
+        loadSkills();
         update();
     }
 
@@ -176,7 +203,6 @@
             <div style="font-size:0.9em;">${formations.map(f => `<div class="cv-block">${formatLines(f)}</div>`).join('')}</div>
             ${document.getElementById('interets').value ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em;">${document.getElementById('interets').value}</p>` : ''}
         `;
-        
         document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
         document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
     }
@@ -197,20 +223,10 @@
 
     function loadData(event) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-            const d = JSON.parse(e.target.result);
-            document.getElementById('nom').value = d.nom || ''; document.getElementById('tel').value = d.tel || '';
-            document.getElementById('email').value = d.email || ''; document.getElementById('adresse').value = d.adresse || '';
-            document.getElementById('metier').value = d.metier || ''; document.getElementById('profil').value = d.profil || '';
-            document.getElementById('interets').value = d.interets || '';
-            selectedSkills.tech = d.tech || []; selectedSkills.hum = d.hum || [];
-            photoData = d.photo || '';
-            const expIn = document.querySelectorAll('.exp-in'); d.exp.forEach((val, i) => { if(expIn[i]) expIn[i].value = val; });
-            const eduIn = document.querySelectorAll('.edu-in'); d.edu.forEach((val, i) => { if(eduIn[i]) eduIn[i].value = val; });
-            loadSkills(); update();
-        };
+        reader.onload = (e) => { applyDataToForm(JSON.parse(e.target.result)); };
         reader.readAsText(event.target.files[0]);
     }
+
     window.onload = init;
 </script>
 </body>
