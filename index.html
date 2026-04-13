@@ -8,164 +8,166 @@
     <style>
         :root { --primary: #3498db; --dark: #2c3e50; --bg: #f4f7f6; --success: #27ae60; --danger: #e74c3c; --secondary: #95a5a6; }
         body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--dark); margin: 0; padding: 20px; }
-        .container { max-width: 850px; margin: 0 auto; }
+        .container { max-width: 900px; margin: 0 auto; }
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 4px solid var(--primary); }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        label { display: block; font-weight: 700; margin-bottom: 5px; font-size: 0.85em; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; margin-bottom: 10px; }
-        .btn { border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; color: white; display: inline-flex; align-items: center; gap: 8px; justify-content: center; text-decoration: none; }
-        .btn-primary { background: var(--primary); }
+        label { display: block; font-weight: 700; margin-bottom: 5px; font-size: 0.85em; text-transform: uppercase; color: var(--primary); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; font-family: inherit; }
+        .btn { border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 600; color: white; width: 100%; font-size: 1em; }
         .btn-success { background: var(--success); }
-        .btn-secondary { background: var(--secondary); }
         .tag { background: #e1f0fa; color: var(--primary); padding: 5px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; margin: 3px; font-size: 12px; border: 1px solid var(--primary); font-weight: 600; }
-        #photo-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--primary); margin-top: 5px; }
         
         #cv-to-print { display: none; }
         @media print {
             .no-print { display: none !important; }
             @page { margin: 0; size: A4; }
-            #cv-to-print { display: block !important; width: 210mm; height: 297mm; padding: 12mm; background: white; box-sizing: border-box; }
-            h2 { color: #3498db !important; border-bottom: 2px solid #3498db; text-transform: uppercase; font-size: 1.05em; margin-top: 15px; }
+            body { background: white; padding: 0; }
+            #cv-to-print { display: block !important; width: 210mm; min-height: 297mm; padding: 15mm; background: white; box-sizing: border-box; }
+            h2 { color: #3498db !important; border-bottom: 2px solid #3498db; text-transform: uppercase; font-size: 1.1em; margin-top: 20px; padding-bottom: 5px; }
         }
     </style>
 </head>
 <body>
 
 <div class="container no-print">
-    <header style="text-align: center; margin-bottom: 20px;">
-        <h1>Mon Assistant CV SAP</h1>
-        <p>Générez votre CV professionnel en quelques clics</p>
+    <header style="text-align: center; margin-bottom: 30px;">
+        <h1>Générateur de CV SPE</h1>
+        <p>Utilise le référentiel officiel pour valoriser vos compétences</p>
     </header>
 
     <div class="card">
         <label>👤 État Civil</label>
         <div class="grid-2">
-            <div><input type="file" accept="image/*" onchange="handlePhoto(event)"><img id="photo-preview"></div>
-            <input type="text" id="nom" placeholder="NOM Prénom" oninput="saveData()">
+            <input type="text" id="nom" placeholder="NOM Prénom" oninput="updatePreview()">
+            <input type="text" id="tel" placeholder="Téléphone" oninput="updatePreview()">
         </div>
         <div class="grid-2">
-            <input type="text" id="tel" placeholder="Téléphone" oninput="saveData()">
-            <input type="email" id="email" placeholder="Email" oninput="saveData()">
+            <input type="email" id="email" placeholder="Email" oninput="updatePreview()">
+            <input type="file" accept="image/*" onchange="handlePhoto(event)">
         </div>
-        <textarea id="adresse" placeholder="Adresse complète" oninput="saveData()"></textarea>
+        <textarea id="adresse" placeholder="Adresse complète" oninput="updatePreview()"></textarea>
     </div>
 
     <div class="card">
-        <label>🎯 Métier visé</label>
+        <label>🎯 Métier & Accroche</label>
         <select id="select-metier" onchange="changerMetier()">
-            <option value="">-- Sélectionnez votre métier --</option>
-            <option value="Garde d'enfants">Assistant parental (Garde d'enfants)</option>
-            <option value="ADVD">Assistant de vie dépendance (ADVD)</option>
-            <option value="Employé Familial">Employé familial (EF)</option>
+            <option value="">-- Sélectionnez un métier --</option>
+            <option value="Garde d'enfants">Garde d'enfants (Assistant Parental)</option>
+            <option value="ADVD">Assistant de Vie Dépendance (ADVD)</option>
+            <option value="Employé Familial">Employé Familial</option>
         </select>
-        <textarea id="profil" oninput="saveData()" placeholder="Accroche professionnelle..."></textarea>
+        <textarea id="profil" placeholder="Décrivez votre profil en quelques lignes..." oninput="updatePreview()"></textarea>
     </div>
 
     <div class="card">
-        <label>🛠️ Compétences (issues du référentiel)</label>
-        <select id="list-comp-suggest" onchange="ajouterItem('compTech', 'list-comp-suggest')"></select>
-        <div id="container-compTech"></div>
-        <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
-        <label>🤝 Qualités & Savoir-être</label>
-        <select id="list-hum-suggest" onchange="ajouterItem('compHum', 'list-hum-suggest')"></select>
-        <div id="container-compHum"></div>
+        <label>🛠️ Compétences Techniques</label>
+        <select id="list-comp-suggest" onchange="ajouterTag('compTech', 'list-comp-suggest')"></select>
+        <div id="container-compTech" style="margin-top: 10px;"></div>
+
+        <label style="margin-top: 20px;">🤝 Qualités & Savoir-être</label>
+        <select id="list-hum-suggest" onchange="ajouterTag('compHum', 'list-hum-suggest')"></select>
+        <div id="container-compHum" style="margin-top: 10px;"></div>
     </div>
 
-    <div class="card" style="text-align: center;">
-        <button class="btn btn-success" onclick="window.print()" style="width: 100%;">🖨️ GÉNÉRER LE CV (PDF)</button>
-    </div>
+    <button class="btn btn-success" onclick="window.print()">🖨️ TELECHARGER LE CV (PDF)</button>
 </div>
 
 <div id="cv-to-print"></div>
 
 <script>
     let baseMetiers = {};
-    let userData = { nom: "", tel: "", email: "", adresse: "", profil: "", compTech: [], compHum: [], photoData: "" };
+    const JSON_URL = 'competences_SPE_par_métier.json'; // Nom exact sur ton GitHub
+    let userData = { compTech: [], compHum: [], photoData: "" };
 
-    // Chargement du fichier JSON externe
-    async function loadData() {
+    // Chargement initial du JSON
+    async function chargerDonnees() {
         try {
-            const resp = await fetch('competences_sap.json');
+            const resp = await fetch(JSON_URL + '?v=' + Date.now());
+            if (!resp.ok) throw new Error("Erreur HTTP: " + resp.status);
             baseMetiers = await resp.json();
-            console.log("Référentiel chargé !");
+            console.log("JSON chargé :", baseMetiers);
         } catch (e) {
-            console.error("Erreur de chargement du JSON", e);
+            alert("Erreur de chargement du référentiel JSON.");
+            console.error(e);
         }
     }
 
+    // Mise à jour des listes déroulantes selon le métier
     function changerMetier() {
         const m = document.getElementById('select-metier').value;
         const compSelect = document.getElementById('list-comp-suggest');
         const humSelect = document.getElementById('list-hum-suggest');
-        
+
+        // On vide tout pour éviter les mélanges
         compSelect.innerHTML = '<option value="">-- Ajouter une compétence --</option>';
         humSelect.innerHTML = '<option value="">-- Ajouter une qualité --</option>';
-        
-        if(m && baseMetiers[m]) {
-            baseMetiers[m].Techniques.forEach(c => compSelect.innerHTML += `<option value="${c}">${c}</option>`);
-            baseMetiers[m].Humaines.forEach(h => humSelect.innerHTML += `<option value="${h}">${h}</option>`);
+        userData.compTech = [];
+        userData.compHum = [];
+        renderTags();
+
+        if (m && baseMetiers[m]) {
+            baseMetiers[m].Techniques.forEach(c => {
+                compSelect.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+            baseMetiers[m].Humaines.forEach(h => {
+                humSelect.innerHTML += `<option value="${h}">${h}</option>`;
+            });
         }
-        saveData();
+        updatePreview();
     }
 
-    function ajouterItem(type, selectId) {
-        const val = document.getElementById(selectId).value;
-        if(val && !userData[type].includes(val)) {
-            userData[type].push(val);
+    function ajouterTag(type, selectId) {
+        const select = document.getElementById(selectId);
+        if (select.value && !userData[type].includes(select.value)) {
+            userData[type].push(select.value);
             renderTags();
-            saveData();
+            updatePreview();
         }
     }
 
     function renderTags() {
         ['compTech', 'compHum'].forEach(type => {
             document.getElementById('container-'+type).innerHTML = userData[type].map(t => 
-                `<span class="tag">${t} <b onclick="userData['${type}']=userData['${type}'].filter(i=>i!=='${t}'); renderTags(); saveData()" style="cursor:pointer">✕</b></span>`
+                `<span class="tag">${t} <b onclick="userData['${type}']=userData['${type}'].filter(i=>i!=='${t}'); renderTags(); updatePreview()" style="cursor:pointer">✕</b></span>`
             ).join('');
         });
     }
 
     function handlePhoto(e) {
         const reader = new FileReader();
-        reader.onload = () => { 
-            userData.photoData = reader.result; 
-            document.getElementById('photo-preview').src = reader.result;
-            document.getElementById('photo-preview').style.display = 'block';
-            saveData(); 
-        };
+        reader.onload = () => { userData.photoData = reader.result; updatePreview(); };
         reader.readAsDataURL(e.target.files[0]);
     }
 
-    function saveData() {
-        const m = document.getElementById('select-metier').value;
-        const printContainer = document.getElementById('cv-to-print');
+    function updatePreview() {
+        const printZone = document.getElementById('cv-to-print');
+        const metier = document.getElementById('select-metier').value;
         
-        // Mise à jour de la zone d'impression
-        printContainer.innerHTML = `
+        printZone.innerHTML = `
             <div style="display:flex; align-items:center; border-bottom:3px solid #3498db; padding-bottom:15px; margin-bottom:20px;">
-                ${userData.photoData ? `<img src="${userData.photoData}" style="width:90px; height:90px; border-radius:50%; margin-right:20px; object-fit:cover; border:2px solid #3498db;">` : ''}
+                ${userData.photoData ? `<img src="${userData.photoData}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-right:25px; border:2px solid #3498db;">` : ''}
                 <div>
-                    <h1 style="margin:0; text-transform:uppercase; color:#2c3e50;">${document.getElementById('nom').value || 'NOM PRÉNOM'}</h1>
+                    <h1 style="margin:0; text-transform:uppercase; font-size:2em;">${document.getElementById('nom').value || 'PRÉNOM NOM'}</h1>
                     <p style="margin:5px 0; color:#555;">✉️ ${document.getElementById('email').value} | 📞 ${document.getElementById('tel').value}</p>
                     <p style="margin:0; font-size:0.9em;">📍 ${document.getElementById('adresse').value}</p>
                 </div>
             </div>
-            <div style="background:#3498db; color:white; padding:8px 20px; display:inline-block; border-radius:4px; font-weight:bold; margin-bottom:20px;">${m || 'Métier Visé'}</div>
-            <p style="font-style:italic; border-left:4px solid #3498db; padding-left:15px; margin-bottom:25px;">${document.getElementById('profil').value}</p>
+            <div style="background:#3498db; color:white; padding:8px 20px; display:inline-block; border-radius:4px; font-weight:bold; margin-bottom:20px; font-size:1.2em;">${metier || 'MÉTIER VISÉ'}</div>
+            <p style="font-style:italic; border-left:4px solid #3498db; padding-left:15px; margin-bottom:30px; line-height:1.5;">${document.getElementById('profil').value}</p>
             
             <h2>Compétences Techniques</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                ${userData.compTech.map(c => `<div style="font-size:0.9em;">• ${c}</div>`).join('')}
-            </div>
+            <ul style="column-count:1; padding-left:20px; font-size:0.95em; line-height:1.6;">
+                ${userData.compTech.map(c => `<li>${c}</li>`).join('')}
+            </ul>
 
-            <h2>Qualités & Savoir-être</h2>
+            <h2 style="margin-top:30px;">Qualités & Savoir-être</h2>
             <div style="display:flex; flex-wrap:wrap; gap:10px;">
-                ${userData.compHum.map(h => `<span style="border:1px solid #ddd; padding:5px 10px; border-radius:5px; font-size:0.85em;">${h}</span>`).join('')}
+                ${userData.compHum.map(h => `<span style="border:1px solid #ddd; padding:6px 12px; border-radius:6px; font-size:0.9em;">${h}</span>`).join('')}
             </div>
         `;
     }
 
-    window.onload = loadData;
+    window.onload = chargerDonnees;
 </script>
 </body>
 </html>
