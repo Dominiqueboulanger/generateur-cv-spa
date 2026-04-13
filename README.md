@@ -1,6 +1,6 @@
 # Générateur de CV SPE
 
-Ce projet est un outil interactif permettant aux professionnels du secteur des Services à la Personne (SAP/SPE) de générer un CV au format PDF/A4 de manière simple et structurée.
+Ce projet est un outil interactif permettant aux professionnels du secteur du Salarié du Particulier Employeur de générer un CV au format PDF/A4 de manière simple et structurée.
 
 ## 🚀 Fonctionnalités
 - **Référentiel métier :** Chargement automatique des compétences techniques et humaines via un fichier JSON.
