@@ -7,12 +7,12 @@
     <style>
         :root { --main-color: #3498db; --bg: #f4f7f6; --text: #2c3e50; --green-btn: #27ae60; --orange: #e67e22; --purple: #9b59b6; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; gap: 20px; color: var(--text); }
-        
+
         .form-side { width: 40%; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); height: 95vh; overflow-y: auto; }
         .preview-side { width: 60%; background: #525659; padding: 20px; display: flex; justify-content: center; height: 95vh; overflow: auto; border-radius: 8px; }
-        
+
         #cv-paper { width: 210mm; min-height: 297mm; background: white; padding: 12mm; box-sizing: border-box; box-shadow: 0 0 20px rgba(0,0,0,0.5); font-size: 11pt; line-height: 1.3; }
-        
+
         /* Styles dynamiques basés sur --main-color */
         h2 { font-size: 1.1em; color: var(--main-color); border-bottom: 2px solid var(--main-color); margin: 15px 0 8px 0; text-transform: uppercase; }
         .cv-badge { background: var(--main-color); color: white; padding: 6px 15px; display: inline-block; border-radius: 4px; font-weight: bold; margin-bottom: 15px; }
@@ -28,7 +28,7 @@
         .btn-save { background: #34495e; }
         .btn-load { background: var(--orange); }
         .btn-model { background: var(--purple); grid-column: span 2; margin-bottom: 10px; }
-        
+
         .tag { background: #f0f0f0; color: #333; padding: 3px 10px; border-radius: 15px; font-size: 10px; margin: 2px; display: inline-flex; align-items: center; border: 1px solid #ccc; }
         .tag b { margin-left: 6px; cursor: pointer; color: #e74c3c; }
         .cv-item-title { font-weight: 700; display: block; margin-bottom: 2px; }
@@ -59,7 +59,7 @@
     </div>
 
     <button class="btn btn-model" onclick="loadRemoteModel()">📋 Charger le modèle (Exemple)</button>
-    
+
     <h2>👤 État Civil</h2>
     <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(event)">
     <input type="text" id="nom" placeholder="Prénom NOM" oninput="update()">
@@ -202,7 +202,10 @@
         if (!text) return "";
         const lines = text.split('\n');
         const title = `<span class="cv-item-title">${lines[0]}</span>`;
-        return lines.length === 1 ? title : `${title}${lines.slice(1).join('<br>')}`;
+        if (lines.length === 1) return title;
+        // Remplace les points suivis d'un espace par un point + saut de ligne
+        const rest = lines.slice(1).join('<br>').replace(/\.\s+/g, '.<br>');
+        return `${title}<br>${rest}`;
     }
 
     function update() {
