@@ -30,7 +30,6 @@
         .tag { background: #f0f0f0; color: #333; padding: 3px 10px; border-radius: 15px; font-size: 10px; margin: 2px; display: inline-flex; align-items: center; border: 1px solid #ccc; }
         .tag b { margin-left: 6px; cursor: pointer; color: #e74c3c; }
         
-        /* MODIFICATION : On met le margin à 0 pour coller la suite */
         .cv-item-title { font-weight: 700; display: block; margin-bottom: 0px; }
         .be-item { font-size: 0.85em; margin-bottom: 4px; display: block; }
 
@@ -61,7 +60,21 @@
     <button class="btn btn-model" onclick="loadRemoteModel()">📋 Charger le modèle (Exemple)</button>
     
     <h2>👤 État Civil</h2>
-    <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(event)">
+    <div class="grid">
+        <div>
+            <label style="font-size: 0.8em; font-weight: bold;">Photo :</label>
+            <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(event)">
+        </div>
+        <div>
+            <label style="font-size: 0.8em; font-weight: bold;">Taille photo :</label>
+            <select id="photo-size" onchange="update()">
+                <option value="60">Petite (60px)</option>
+                <option value="85" selected>Moyenne (85px)</option>
+                <option value="110">Grande (110px)</option>
+            </select>
+        </div>
+    </div>
+    
     <input type="text" id="nom" placeholder="Prénom NOM" oninput="update()">
     <div class="grid"><input type="text" id="tel" placeholder="Téléphone" oninput="update()"><input type="text" id="email" placeholder="Email" oninput="update()"></div>
     <textarea id="adresse" placeholder="Adresse" oninput="update()"></textarea>
@@ -154,6 +167,7 @@
         document.getElementById('metier').value = d.metier || '';
         document.getElementById('profil').value = d.profil || '';
         document.getElementById('interets').value = d.interets || '';
+        if(d.photoSize) document.getElementById('photo-size').value = d.photoSize;
         selectedSkills.tech = d.tech || [];
         selectedSkills.hum = d.hum || [];
         photoData = d.photo || '';
@@ -198,7 +212,6 @@
         }
     }
 
-    // MODIFICATION ICI : On retire le <br> entre title et rest
     function formatLines(text) {
         if (!text) return "";
         const lines = text.split('\n');
@@ -213,10 +226,13 @@
         const paper = document.getElementById('cv-paper');
         const experiences = Array.from(document.querySelectorAll('.exp-in')).map(i => i.value).filter(v => v);
         const formations = Array.from(document.querySelectorAll('.edu-in')).map(i => i.value).filter(v => v);
+        
+        // Récupération de la taille choisie
+        const size = document.getElementById('photo-size').value;
 
         paper.innerHTML = `
             <div class="cv-header-line" style="display:flex; align-items:center;">
-                ${photoData ? `<img src="${photoData}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
+                ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
                 <div style="flex:1;">
                     <h1 style="margin:0; font-size:1.8em;">${document.getElementById('nom').value || 'Prénom NOM'}</h1>
                     <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} | ${document.getElementById('email').value}</p>
@@ -245,6 +261,7 @@
             email: document.getElementById('email').value, adresse: document.getElementById('adresse').value,
             metier: document.getElementById('metier').value, profil: document.getElementById('profil').value,
             interets: document.getElementById('interets').value, tech: selectedSkills.tech, hum: selectedSkills.hum,
+            photoSize: document.getElementById('photo-size').value,
             exp: Array.from(document.querySelectorAll('.exp-in')).map(i => i.value),
             edu: Array.from(document.querySelectorAll('.edu-in')).map(i => i.value), photo: photoData
         };
