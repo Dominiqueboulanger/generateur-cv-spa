@@ -13,13 +13,11 @@
         
         #cv-paper { width: 210mm; min-height: 297mm; background: white; padding: 12mm; box-sizing: border-box; box-shadow: 0 0 20px rgba(0,0,0,0.5); font-size: 11pt; line-height: 1.3; }
         
-        /* Styles dynamiques basés sur --main-color */
         h2 { font-size: 1.1em; color: var(--main-color); border-bottom: 2px solid var(--main-color); margin: 15px 0 8px 0; text-transform: uppercase; }
         .cv-badge { background: var(--main-color); color: white; padding: 6px 15px; display: inline-block; border-radius: 4px; font-weight: bold; margin-bottom: 15px; }
         .cv-header-line { border-bottom: 3px solid var(--main-color); padding-bottom: 15px; margin-bottom: 15px; }
         .cv-quote { border-left: 3px solid var(--main-color); padding-left: 10px; margin-bottom: 15px; font-size: 0.95em; font-style: italic; }
 
-        /* Interface */
         input, select, textarea { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.9em; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
@@ -31,7 +29,9 @@
         
         .tag { background: #f0f0f0; color: #333; padding: 3px 10px; border-radius: 15px; font-size: 10px; margin: 2px; display: inline-flex; align-items: center; border: 1px solid #ccc; }
         .tag b { margin-left: 6px; cursor: pointer; color: #e74c3c; }
-        .cv-item-title { font-weight: 700; display: block; margin-bottom: 2px; }
+        
+        /* MODIFICATION : On met le margin à 0 pour coller la suite */
+        .cv-item-title { font-weight: 700; display: block; margin-bottom: 0px; }
         .be-item { font-size: 0.85em; margin-bottom: 4px; display: block; }
 
         @media print {
@@ -198,11 +198,15 @@
         }
     }
 
+    // MODIFICATION ICI : On retire le <br> entre title et rest
     function formatLines(text) {
         if (!text) return "";
         const lines = text.split('\n');
         const title = `<span class="cv-item-title">${lines[0]}</span>`;
-        return lines.length === 1 ? title : `${title}${lines.slice(1).join('<br>')}`;
+        if (lines.length === 1) return title;
+        
+        const rest = lines.slice(1).join('<br>').replace(/\.\s+/g, '.<br>');
+        return `${title}${rest}`; 
     }
 
     function update() {
