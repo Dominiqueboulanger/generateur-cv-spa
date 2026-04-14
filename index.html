@@ -198,16 +198,11 @@
         }
     }
 
-    // VOTRE SOLUTION INTÉGRÉE :
     function formatLines(text) {
         if (!text) return "";
         const lines = text.split('\n');
         const title = `<span class="cv-item-title">${lines[0]}</span>`;
-        if (lines.length === 1) return title;
-        
-        // Remplace les points suivis d'un espace par un point + saut de ligne
-        const rest = lines.slice(1).join('<br>').replace(/\.\s+/g, '.<br>');
-        return `${title}<br>${rest}`;
+        return lines.length === 1 ? title : `${title}${lines.slice(1).join('<br>')}`;
     }
 
     function update() {
