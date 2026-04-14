@@ -38,7 +38,7 @@
             @page { size: A4; margin: 0; }
             body { padding: 0; margin: 0; background: white; display: block; }
             .preview-side { background: white; padding: 0; width: 100%; height: auto; overflow: visible; }
-            #cv-paper { box-shadow: none; margin: 0; width: 210mm; height: 297mm; padding: 10mm; font-size: 10pt; overflow: hidden; }
+            #cv-paper { box-shadow: none; margin: 0 auto; width: 210mm; height: 297mm; padding: 10mm; font-size: 10pt; overflow: hidden; }
         }
     </style>
 </head>
@@ -70,7 +70,7 @@
             <select id="photo-size" onchange="update()">
                 <option value="60">Petite (60px)</option>
                 <option value="85" selected>Moyenne (85px)</option>
-                <option value="110">Grande (110px)</option>
+                <option value="150">Grande (150px)</option>
             </select>
         </div>
     </div>
@@ -80,7 +80,7 @@
     <textarea id="adresse" placeholder="Adresse" oninput="update()"></textarea>
 
     <h2>🌍 Langues</h2>
-    <input type="text" id="langues" placeholder="Français (maternel), Anglais (notions)..." oninput="update()">
+    <input type="text" id="langues" placeholder="Ex: Français (maternel), Anglais (A2)..." oninput="update()">
 
     <h2>🎯 Métier & Accroche</h2>
     <select id="metier" onchange="loadSkills()">
@@ -95,7 +95,7 @@
     <select id="selTech" onchange="addTag('tech', this)"></select>
     <div class="input-group">
         <input type="text" id="customTech" placeholder="Autre savoir-faire...">
-        <button onclick="addCustomTag('tech')">+</button>
+        <button class="btn-add" style="background:#333; color:white; border:none; padding:8px; border-radius:5px;" onclick="addCustomTag('tech')">+</button>
     </div>
     <div id="tagsTech"></div>
 
@@ -103,7 +103,7 @@
     <select id="selHum" onchange="addTag('hum', this)"></select>
     <div class="input-group">
         <input type="text" id="customHum" placeholder="Autre savoir-être...">
-        <button onclick="addCustomTag('hum')">+</button>
+        <button class="btn-add" style="background:#333; color:white; border:none; padding:8px; border-radius:5px;" onclick="addCustomTag('hum')">+</button>
     </div>
     <div id="tagsHum"></div>
 
@@ -149,6 +149,16 @@
             repoData = await response.json();
         } catch(e) { console.error("Erreur référentiel"); }
         update();
+    }
+
+    async function loadRemoteModel() {
+        if(confirm("Charger le modèle exemple ?")) {
+            try {
+                const response = await fetch('./modele_cv.json?v=' + Date.now());
+                const d = await response.json();
+                applyDataToForm(d);
+            } catch(e) { alert("modele_cv.json introuvable."); }
+        }
     }
 
     function applyDataToForm(d) {
@@ -219,16 +229,16 @@
         const experiences = Array.from(document.querySelectorAll('.exp-in')).map(i => i.value).filter(v => v);
         const formations = Array.from(document.querySelectorAll('.edu-in')).map(i => i.value).filter(v => v);
         const size = document.getElementById('photo-size').value;
-        const langues = document.getElementById('langues').value;
         const profil = document.getElementById('profil').value;
         const interets = document.getElementById('interets').value;
+        const langues = document.getElementById('langues').value;
 
         paper.innerHTML = `
             <div class="cv-header-line" style="display:flex; align-items:center;">
                 ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
                 <div style="flex:1;">
                     <h1 style="margin:0; font-size:1.8em;">${document.getElementById('nom').value || 'Prénom NOM'}</h1>
-                    <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} ${document.getElementById('tel').value && document.getElementById('email').value ? '|' : ''} ${document.getElementById('email').value}</p>
+                    <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} | ${document.getElementById('email').value}</p>
                     <p style="margin:0; font-size:0.8em;">${document.getElementById('adresse').value}</p>
                 </div>
             </div>
