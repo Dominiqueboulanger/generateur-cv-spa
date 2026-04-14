@@ -24,7 +24,7 @@
         .btn-model { background: var(--purple); grid-column: span 2; margin-bottom: 10px; }
         .tag { background: #f0f0f0; color: #333; padding: 3px 10px; border-radius: 15px; font-size: 10px; margin: 2px; display: inline-flex; align-items: center; border: 1px solid #ccc; }
         .tag b { margin-left: 6px; cursor: pointer; color: #e74c3c; }
-        .cv-item-title { font-weight: 700; display: block; margin-bottom: 4px; }
+        .cv-item-title { font-weight: 700; display: block; margin-bottom: 2px; }
         .be-item { font-size: 0.85em; margin-bottom: 4px; display: block; }
         @media print {
             .no-print { display: none !important; }
@@ -136,16 +136,15 @@
         if(val && !selectedSkills[type].includes(val)) { selectedSkills[type].push(val); document.getElementById(id).value = ""; update(); }
     }
 
-    // FONCTION MODIFIÉE : Passe à la ligne après chaque point
+    // VOTRE SOLUTION INTÉGRÉE : saut de ligne après chaque phrase (. )
     function formatLines(text) {
         if (!text) return "";
         const lines = text.split('\n');
-        // On prend la première ligne pour le titre
         const title = `<span class="cv-item-title">${lines[0]}</span>`;
         if (lines.length === 1) return title;
-        // Pour le reste, on remplace ". " par ".<br>" pour aérer après chaque phrase
-        const rest = lines.slice(1).join('<br>').replace(/\. /g, '.<br>');
-        return `${title}${rest}`;
+        // Application de votre regex pour l'aération
+        const rest = lines.slice(1).join('<br>').replace(/\.\s+/g, '.<br>');
+        return `${title}<br>${rest}`;
     }
 
     function update() {
@@ -171,7 +170,7 @@
             <div style="font-size:0.9em;">${experiences.map(e => `<div style="margin-bottom:15px; text-align:justify;">${formatLines(e)}</div>`).join('')}</div>
             <h2>Formations</h2>
             <div style="font-size:0.9em;">${formations.map(f => `<div style="margin-bottom:12px;">${formatLines(f)}</div>`).join('')}</div>
-            ${document.getElementById('interets').value ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em;">${document.getElementById('interets').value}</p>` : ''}
+            ${document.getElementById('interets').value ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em;">${document.getElementById('interets').value}</p> : ''}
         `;
         document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
         document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
