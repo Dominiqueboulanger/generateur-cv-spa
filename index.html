@@ -99,10 +99,10 @@
     </div>
     <div id="tagsTech"></div>
 
-    <h2>🤝 Savoir-Être</h2>
+    <h2>🤝 Compétences Sociales</h2>
     <select id="selHum" onchange="addTag('hum', this)"></select>
     <div class="input-group">
-        <input type="text" id="customHum" placeholder="Autre savoir-être...">
+        <input type="text" id="customHum" placeholder="Autre compétence sociale...">
         <button class="btn-add" style="background:#333; color:white; border:none; padding:8px; border-radius:5px;" onclick="addCustomTag('hum')">+</button>
     </div>
     <div id="tagsHum"></div>
@@ -252,7 +252,7 @@
                     ${selectedSkills.tech.length > 0 ? `<h2>Savoir-Faire</h2><ul style="padding-left:15px; font-size:0.85em; margin:0;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}
                 </div>
                 <div>
-                    ${selectedSkills.hum.length > 0 ? `<h2>Savoir-Être</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
+                    ${selectedSkills.hum.length > 0 ? `<h2>Compétences Sociales</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
                     ${langues ? `<h2 style="margin-top:10px;">Langues</h2><p style="font-size:0.85em; margin:0;">${langues}</p>` : ''}
                 </div>
             </div>
