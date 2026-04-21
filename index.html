@@ -107,18 +107,39 @@
     </div>
     <div id="tagsHum"></div>
 
-    <h2>💼 Expériences Professionnelles</h2>
-    <div id="exp-inputs">
-        <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
-        <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
-        <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
+   <h2>💼 Expériences Professionnelles</h2>
+<div id="exp-inputs">
+    <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 6px;">
+        <input type="text" class="exp-in" placeholder="Dates (ex: 2024-2025)" oninput="update()">
+        <input type="text" class="exp-in" placeholder="Poste (en gras)" oninput="update()">
+        <input type="text" class="exp-in" placeholder="Lieu d'exercice" oninput="update()">
+        <textarea class="exp-in" placeholder="Description des missions" oninput="update()" rows="2"></textarea>
     </div>
+    <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 6px;">
+        <input type="text" class="exp-in" placeholder="Dates" oninput="update()">
+        <input type="text" class="exp-in" placeholder="Poste" oninput="update()">
+        <input type="text" class="exp-in" placeholder="Lieu" oninput="update()">
+        <textarea class="exp-in" placeholder="Description" oninput="update()" rows="2"></textarea>
+    </div>
+</div>
 
-    <h2>🎓 Formations</h2>
-    <div id="edu-inputs">
-        <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
-        <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
+<h2>🎓 Formations & Modules</h2>
+<div id="edu-inputs">
+    <div style="border: 2px solid var(--main-color); padding: 10px; margin-bottom: 10px; border-radius: 6px;">
+        <input type="text" class="edu-in" placeholder="Année" oninput="update()">
+        <input type="text" class="edu-in" placeholder="Organisme" oninput="update()">
+        <select id="selModules" onchange="update()">
+            <option value="">-- Choisir un module (lié au métier) --</option>
+        </select>
+        <textarea class="edu-in" placeholder="Détails" oninput="update()" rows="2"></textarea>
     </div>
+    <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 6px;">
+        <input type="text" class="edu-in" placeholder="Année" oninput="update()">
+        <input type="text" class="edu-in" placeholder="Organisme" oninput="update()">
+        <input type="text" class="edu-in" placeholder="Intitulé" oninput="update()">
+        <textarea class="edu-in" placeholder="Détails" oninput="update()" rows="2"></textarea>
+    </div>
+</div>
 
     <h2>🎨 Centres d'intérêt</h2>
     <input type="text" id="interets" placeholder="Loisirs..." oninput="update()">
@@ -162,25 +183,6 @@
     }
 
     function applyDataToForm(d) {
-        document.getElementById('nom').value = d.nom || '';
-        document.getElementById('tel').value = d.tel || '';
-        document.getElementById('email').value = d.email || '';
-        document.getElementById('adresse').value = d.adresse || '';
-        document.getElementById('langues').value = d.langues || '';
-        document.getElementById('metier').value = d.metier || '';
-        document.getElementById('profil').value = d.profil || '';
-        document.getElementById('interets').value = d.interets || '';
-        if(d.photoSize) document.getElementById('photo-size').value = d.photoSize;
-        selectedSkills.tech = d.tech || [];
-        selectedSkills.hum = d.hum || [];
-        photoData = d.photo || '';
-        const expIn = document.querySelectorAll('.exp-in');
-        if(d.exp) d.exp.forEach((val, i) => { if(expIn[i]) expIn[i].value = val; });
-        const eduIn = document.querySelectorAll('.edu-in');
-        if(d.edu) d.edu.forEach((val, i) => { if(eduIn[i]) eduIn[i].value = val; });
-        loadSkills();
-        update();
-    }
 
     function handlePhoto(e) {
         const reader = new FileReader();
