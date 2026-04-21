@@ -182,12 +182,9 @@
         document.getElementById('profil').value = d.profil || '';
         document.getElementById('interets').value = d.interets || '';
         if(d.photoSize) document.getElementById('photo-size').value = d.photoSize;
-        
         selectedSkills.tech = d.tech || [];
         selectedSkills.hum = d.hum || [];
         photoData = d.photo || '';
-
-        // Chargement des nouveaux blocs complexes
         const expIn = document.querySelectorAll('#exp-inputs > div');
         if (d.exp && Array.isArray(d.exp)) {
             d.exp.forEach((dataArray, i) => {
@@ -197,7 +194,6 @@
                 }
             });
         }
-        
         const eduIn = document.querySelectorAll('#edu-inputs > div');
         if (d.edu && Array.isArray(d.edu)) {
             d.edu.forEach((dataArray, i) => {
@@ -217,34 +213,21 @@
         const profil = document.getElementById('profil').value;
         const interets = document.getElementById('interets').value;
         const langues = document.getElementById('langues').value;
-
-        // Génération HTML Expériences
         let expHtml = "";
         document.querySelectorAll('#exp-inputs > div').forEach(div => {
             const inp = div.querySelectorAll('input, textarea');
             if (inp[0].value) {
-                expHtml += `<div style="margin-bottom:10px;">
-                    <span class="cv-item-title"><b>${inp[1].value}</b> (${inp[0].value})</span>
-                    <span style="font-size:0.9em; display:block;">${inp[2].value}</span>
-                    <span style="font-size:0.9em; display:block;">${inp[3].value}</span>
-                </div>`;
+                expHtml += `<div style="margin-bottom:10px;"><span class="cv-item-title"><b>${inp[1].value}</b> (${inp[0].value})</span><span style="font-size:0.9em; display:block;">${inp[2].value}</span><span style="font-size:0.9em; display:block;">${inp[3].value}</span></div>`;
             }
         });
-
-        // Génération HTML Formations
         let eduHtml = "";
         document.querySelectorAll('#edu-inputs > div').forEach(div => {
             const inp = div.querySelectorAll('input, select, textarea');
             const titre = (inp[2].tagName === 'SELECT') ? inp[2].options[inp[2].selectedIndex].text : inp[2].value;
             if (inp[0].value) {
-                eduHtml += `<div style="margin-bottom:8px;">
-                    <span class="cv-item-title"><b>${titre}</b></span>
-                    <span style="font-size:0.9em; display:block;">${inp[1].value} - ${inp[0].value}</span>
-                    <span style="font-size:0.9em; display:block;">${inp[3].value}</span>
-                </div>`;
+                eduHtml += `<div style="margin-bottom:8px;"><span class="cv-item-title"><b>${titre}</b></span><span style="font-size:0.9em; display:block;">${inp[1].value} - ${inp[0].value}</span><span style="font-size:0.9em; display:block;">${inp[3].value}</span></div>`;
             }
         });
-
         paper.innerHTML = `
             <div class="cv-header-line" style="display:flex; align-items:center;">
                 ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
@@ -256,7 +239,6 @@
             </div>
             <div class="cv-badge">${document.getElementById('metier').value || 'MÉTIER'}</div>
             ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
-            
             <div class="grid">
                 <div>${selectedSkills.tech.length > 0 ? `<h2>Savoir-Faire</h2><ul style="padding-left:15px; font-size:0.85em; margin:0;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}</div>
                 <div>${selectedSkills.hum.length > 0 ? `<h2>Compétences Sociales</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
@@ -268,6 +250,39 @@
         `;
         document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
         document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
+    }
+
+    function handlePhoto(e) {
+        const reader = new FileReader();
+        reader.onload = (event) => { photoData = event.target.result; update(); };
+        reader.readAsDataURL(e.target.files[0]);
+    }
+
+    function loadSkills() {
+        const m = document.getElementById('metier').value;
+        if (!m || !repoData[m]) return;
+        document.getElementById('selTech').innerHTML = '<option value="">-- Savoir-Faire --</option>' + repoData[m].tech.map(t => `<option value="${t}">${t}</option>`).join('');
+        document.getElementById('selHum').innerHTML = '<option value="">-- Compétences Sociales --</option>' + repoData[m].hum.map(h => `<option value="${h}">${h}</option>`).join('');
+        const modSelect = document.getElementById('selModules');
+        modSelect.innerHTML = '<option value="">-- Choisir un module --</option>' + repoData[m].modules.map(mod => `<option value="${mod}">${mod}</option>`).join('');
+        update();
+    }
+
+    function addTag(type, el) {
+        if(el.value && !selectedSkills[type].includes(el.value)) { selectedSkills[type].push(el.value); update(); }
+        el.value = "";
+    }
+
+    function addCustomTag(type) {
+        const id = type === 'tech' ? 'customTech' : 'customHum';
+        const val = document.getElementById(id).value.trim();
+        if(val && !selectedSkills[type].includes(val)) { selectedSkills[type].push(val); document.getElementById(id).value = ""; update(); }
+    }
+
+    function loadData(event) {
+        const reader = new FileReader();
+        reader.onload = (e) => { applyDataToForm(JSON.parse(e.target.result)); };
+        reader.readAsText(event.target.files[0]);
     }
 
     function saveData() {
@@ -286,10 +301,10 @@
         a.download = `cv_${fullData.nom.replace(/\s/g, '_') || 'brouillon'}.json`; a.click();
     }
 
-    function loadData(event) {
-        const reader = new FileReader();
-        reader.onload = (e) => { applyDataToForm(JSON.parse(e.target.result)); };
-        reader.readAsText(event.target.files[0]);
+    async function loadRemoteModel() {
+        const response = await fetch('modele_cv.json');
+        const data = await response.json();
+        applyDataToForm(data);
     }
 
     window.onload = init;
