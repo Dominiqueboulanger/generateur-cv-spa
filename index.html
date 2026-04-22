@@ -16,14 +16,14 @@
         h2 { font-size: 1.1em; color: var(--main-color); border-bottom: 2px solid var(--main-color); margin: 12px 0 6px 0; text-transform: uppercase; }
         .cv-badge { background: var(--main-color); color: white; padding: 5px 15px; display: inline-block; border-radius: 4px; font-weight: bold; margin-bottom: 12px; }
         .cv-header-line { border-bottom: 3px solid var(--main-color); padding-bottom: 12px; margin-bottom: 12px; }
-        .cv-quote { 
-    border-left: 4px solid var(--main-color); 
-    padding-left: 15px; 
-    margin-bottom: 20px; 
+        .cv-quote {
+    border-left: 4px solid var(--main-color);
+    padding-left: 15px;
+    margin-bottom: 20px;
     font-size: 1.2em;      /* Augmente la taille */
     font-weight: 700;     /* Rend le texte en gras */
-    color: #2c3e50; 
-    font-style: italic; 
+    color: #2c3e50;
+    font-style: italic;
 }
         input, select, textarea { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.9em; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -66,35 +66,21 @@
 
     <button class="btn btn-model" onclick="loadRemoteModel()">📋 Charger le modèle (Exemple)</button>
     
-  <h2>👤 État Civil</h2>
-<div class="grid">
-    <div>
-        <label style="font-size: 0.8em; font-weight: bold;">Photo :</label>
-        <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(event)">
+    <h2>👤 État Civil</h2>
+    <div class="grid">
+        <div>
+            <label style="font-size: 0.8em; font-weight: bold;">Photo :</label>
+            <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(event)">
+        </div>
+        <div>
+            <label style="font-size: 0.8em; font-weight: bold;">Taille photo :</label>
+            <select id="photo-size" onchange="update()">
+                <option value="60">Petite (60px)</option>
+                <option value="85" selected>Moyenne (85px)</option>
+                <option value="150">Grande (150px)</option>
+            </select>
+        </div>
     </div>
-    <div>
-        <label style="font-size: 0.8em; font-weight: bold;">Taille photo :</label>
-        <select id="photo-size" onchange="update()">
-            <option value="60">Petite (60px)</option>
-            <option value="85" selected>Moyenne (85px)</option>
-            <option value="150">Grande (150px)</option>
-        </select>
-    </div>
-    <div>
-        <label style="font-size: 0.8em; font-weight: bold;">Genre :</label>
-        <select id="genre" onchange="update()">
-            <option value="f">Femme</option>
-            <option value="m">Homme</option>
-        </select>
-    </div>
-</div>
-        <label style="font-size: 0.8em; font-weight: bold;">Genre :</label>
-        <select id="genre" onchange="update()">
-            <option value="f">Femme</option>
-            <option value="m">Homme</option>
-        </select>
-    </div>
-</div>
     
     <input type="text" id="nom" placeholder="Prénom NOM" oninput="update()">
     <div class="grid"><input type="text" id="tel" placeholder="Téléphone" oninput="update()"><input type="text" id="email" placeholder="Email" oninput="update()"></div>
@@ -281,19 +267,7 @@
     const profil = document.getElementById('profil').value;
     const interets = document.getElementById('interets').value;
     const langues = document.getElementById('langues').value;
-    // 1. Récupération des valeurs
-    const genre = document.getElementById('genre').value;
-    const selectMetier = document.getElementById('metier');
-    const texteMetier = selectMetier.options[selectMetier.selectedIndex].text;
 
-    // 2. Adaptation du texte métier
-    let metierFinal = (selectMetier.value === "") ? "MÉTIER" : texteMetier;
-
-    if (genre === 'f') {
-        metierFinal = metierFinal.replace("Assistant de Vie", "Assistante de Vie")
-                             .replace("Employé Familial", "Employée Familiale")
-                             .replace("Garde d'enfants", "Assistante Parentale");
-    }
     // --- Gestion des Formations ---
     const eduGroups = document.querySelectorAll('.edu-group');
     let formationsHtml = "";
@@ -340,7 +314,7 @@
             </div>
         </div>
         
-        <div class="cv-badge">${metierFinal}</div>
+        <div class="cv-badge">${document.getElementById('metier').value || 'MÉTIER'}</div>
         
         ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
         
@@ -445,4 +419,5 @@
 </script>
 </body>
 </html>
+
 
