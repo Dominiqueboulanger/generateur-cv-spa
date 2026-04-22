@@ -98,10 +98,7 @@
 
     <h2>🎯 Métier & Accroche</h2>
     <select id="metier" onchange="loadSkills()">
-        <option value="">-- Choisir le métier --</option>
-        <option value="Garde">Garde d'enfants (Assistant Parental)</option>
-        <option value="ADVD">Assistant de Vie (ADVD)</option>
-        <option value="EF">Employé Familial</option>
+    <option value="">-- Choisir le métier --</option>
     </select>
     <textarea id="profil" placeholder="Phrase d'accroche..." oninput="update()"></textarea>
 
@@ -171,15 +168,35 @@
 
    async function init() {
     try {
-        // Chargement des libellés de métiers
+        // 1. Chargement du fichier des libellés de métiers
         const respM = await fetch('metiers.json?v=' + Date.now());
         metiersRef = await respM.json();
         
-        // Chargement des compétences
+        // 2. Remplissage automatique du menu déroulant #metier
+        const select = document.getElementById('metier');
+        // On vide le contenu actuel et on remet l'option par défaut
+        select.innerHTML = '<option value="">-- Choisir le métier --</option>';
+        
+        // On boucle sur chaque clé du fichier JSON
+        for (const code in metiersRef) {
+            const option = document.createElement('option');
+            option.value = code; // Exemple: "Garde"
+            option.text = metiersRef[code]['m']; // Utilise la forme masculine pour l'affichage dans la liste
+            select.add(option);
+        }
+        
+        // 3. Chargement du fichier des compétences
         const response = await fetch('competences_SPE_par_metier.json?v=' + Date.now());
         repoData = await response.json();
-    } catch(e) { console.error("Erreur de chargement des données"); }
-    update();
+        
+        // 4. Mise à jour de l'affichage
+        update(); 
+        
+    } catch(e) { 
+        console.error("Erreur de chargement des données :", e);
+        // Même en cas d'erreur, on tente de mettre à jour le CV
+        update();
+    }
 }
 
     async function loadRemoteModel() {
