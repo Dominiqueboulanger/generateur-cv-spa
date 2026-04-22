@@ -16,15 +16,8 @@
         h2 { font-size: 1.1em; color: var(--main-color); border-bottom: 2px solid var(--main-color); margin: 12px 0 6px 0; text-transform: uppercase; }
         .cv-badge { background: var(--main-color); color: white; padding: 5px 15px; display: inline-block; border-radius: 4px; font-weight: bold; margin-bottom: 12px; }
         .cv-header-line { border-bottom: 3px solid var(--main-color); padding-bottom: 12px; margin-bottom: 12px; }
-       .cv-quote { 
-        border-left: 4px solid var(--main-color); 
-        padding-left: 15px; 
-        margin-bottom: 20px; 
-        font-size: 1.2em;      /* Augmente la taille */
-        font-weight: 700;     /* Rend le texte en gras */
-        color: #2c3e50; 
-        font-style: italic; 
-}
+        .cv-quote { border-left: 3px solid var(--main-color); padding-left: 10px; margin-bottom: 12px; font-size: 0.9em; font-style: italic; color: #444; }
+
         input, select, textarea { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.9em; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .btn-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
@@ -115,27 +108,18 @@
     <div id="tagsHum"></div>
 
     <h2>💼 Expériences Professionnelles</h2>
-<div id="exp-inputs">
-    <div class="exp-group" style="margin-bottom: 15px; border: 1px solid #eee; padding: 10px; border-radius: 5px;">
-        <input type="text" class="exp-date" placeholder="Dates (ex: 2024 - 2026)" oninput="update()">
-        <input type="text" class="exp-employeur" placeholder="Employeur" oninput="update()">
-        <input type="text" class="exp-fonction" placeholder="Intitulé du poste" oninput="update()">
-        <textarea class="exp-desc" placeholder="Description des tâches" oninput="update()" rows="2"></textarea>
+    <div id="exp-inputs">
+        <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
+        <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
+        <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
     </div>
-</div>
-<button class="btn btn-save" style="background: #27ae60; margin-bottom: 20px;" onclick="addExp()">+ Ajouter une expérience</button>
+
     <h2>🎓 Formations</h2>
-<div id="edu-inputs">
-    <div class="edu-group" style="margin-bottom: 15px; border: 1px solid #eee; padding: 10px; border-radius: 5px;">
-        <input type="text" class="edu-date" placeholder="Année" oninput="update()">
-        <input type="text" class="edu-org" placeholder="Organisme" oninput="update()">
-        <input type="text" class="edu-intitule" placeholder="Intitulé" oninput="update()">
-        <select class="edu-module" onchange="update()">
-            <option value="">-- Choisir un module --</option>
-        </select>
+    <div id="edu-inputs">
+        <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
+        <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
     </div>
-</div>
-<button class="btn btn-save" style="background: #27ae60; margin-bottom: 20px;" onclick="addEdu()">+ Ajouter une formation</button>
+
     <h2>🎨 Centres d'intérêt</h2>
     <input type="text" id="interets" placeholder="Loisirs..." oninput="update()">
 
@@ -204,35 +188,32 @@
         reader.readAsDataURL(e.target.files[0]);
     }
 
-    function loadSkills() {
-    const m = document.getElementById('metier').value;
-    const sT = document.getElementById('selTech');
-    const sH = document.getElementById('selHum');
+   function loadSkills() {
+        const m = document.getElementById('metier').value;
+        const sT = document.getElementById('selTech');
+        const sH = document.getElementById('selHum');
+        const sMod = document.getElementById('selModules'); // Assurez-vous d'avoir ce select dans le HTML
 
-    // Réinitialisation des menus Techniques et Sociales
-    sT.innerHTML = sH.innerHTML = '<option value="">-- Sélectionner --</option>';
+        sT.innerHTML = sH.innerHTML = '<option value="">-- Sélectionner --</option>';
+        if (sMod) sMod.innerHTML = '<option value="">-- Choisir un module --</option>';
 
-    if(m && repoData[m]) {
-        // Remplir les Techniques
-        repoData[m].Techniques.forEach(t => sT.innerHTML += `<option value="${t}">${t}</option>`);
-        
-        // Remplir les Compétences Sociales
-        repoData[m].Humaines.forEach(h => sH.innerHTML += `<option value="${h}">${h}</option>`);
-        
-        // Mise à jour automatique des menus de formation (nouveauté)
-        if (repoData[m].modules) {
-            const moduleSelects = document.querySelectorAll('.edu-module');
-            moduleSelects.forEach(select => {
-                const currentValue = select.value;
-                select.innerHTML = '<option value="">-- Choisir un module --</option>';
+        if(m && repoData[m]) {
+            // Remplir les Techniques
+            repoData[m].Techniques.forEach(t => sT.innerHTML += `<option value="${t}">${t}</option>`);
+            
+            // Remplir les Compétences Sociales (Humaines)
+            repoData[m].Humaines.forEach(h => sH.innerHTML += `<option value="${h}">${h}</option>`);
+            
+            // Remplir les Modules
+            if (sMod && repoData[m].modules) {
                 repoData[m].modules.forEach(mod => {
-                    select.innerHTML += `<option value="${mod}" ${currentValue === mod ? 'selected' : ''}>${mod}</option>`;
+                    sMod.innerHTML += `<option value="${mod}">${mod}</option>`;
                 });
-            });
+            }
         }
+        update();
     }
-    update();
-}
+update();
 
     function addTag(type, el) {
         if(el.value && !selectedSkills[type].includes(el.value)) {
@@ -258,81 +239,50 @@
         return `${title}${rest}`;
     }
 
-  function update() {
-    const paper = document.getElementById('cv-paper');
-    const formations = Array.from(document.querySelectorAll('.edu-in')).map(i => i.value).filter(v => v);
-    const size = document.getElementById('photo-size').value;
-    const profil = document.getElementById('profil').value;
-    const interets = document.getElementById('interets').value;
-    const langues = document.getElementById('langues').value;
+    function update() {
+        const paper = document.getElementById('cv-paper');
+        const experiences = Array.from(document.querySelectorAll('.exp-in')).map(i => i.value).filter(v => v);
+        const formations = Array.from(document.querySelectorAll('.edu-in')).map(i => i.value).filter(v => v);
+        const size = document.getElementById('photo-size').value;
+        const profil = document.getElementById('profil').value;
+        const interets = document.getElementById('interets').value;
+        const langues = document.getElementById('langues').value;
 
-    // 1. En-tête et haut du CV
-    paper.innerHTML = `
-        <div class="cv-header-line" style="display:flex; align-items:center;">
-            ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
-            <div style="flex:1;">
-                <h1 style="margin:0; font-size:1.8em;">${document.getElementById('nom').value || 'Prénom NOM'}</h1>
-                <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} ${document.getElementById('tel').value && document.getElementById('email').value ? '|' : ''} ${document.getElementById('email').value}</p>
-                <p style="margin:0; font-size:0.8em;">${document.getElementById('adresse').value}</p>
-            </div>
-        </div>
-        <div class="cv-badge">${document.getElementById('metier').value || 'MÉTIER'}</div>
-        ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
-        <div class="grid">
-            <div>${selectedSkills.tech.length > 0 ? `<h2>Savoir-Faire</h2><ul style="padding-left:15px; font-size:0.85em; margin:0;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}</div>
-            <div>${selectedSkills.hum.length > 0 ? `<h2>Compétences Sociales</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
-                 ${langues ? `<h2 style="margin-top:10px;">Langues</h2><p style="font-size:0.85em; margin:0;">${langues}</p>` : ''}
-            </div>
-        </div>
-        <h2>Expériences Professionnelles</h2>
-    `;
-
-    // 2. Logique des expériences (ajoutée après le innerHTML)
-    const expGroups = document.querySelectorAll('.exp-group');
-   expGroups.forEach(group => {
-    const date = group.querySelector('.exp-date').value;
-    const emp = group.querySelector('.exp-employeur').value;
-    const fonc = group.querySelector('.exp-fonction').value;
-    const desc = group.querySelector('.exp-desc').value;
-    
-    if(date || emp || fonc || desc) {
-        paper.innerHTML += `
-            <div style="margin-bottom: 12px;">
-                <div style="display: flex; gap: 10px; font-weight: bold;">
-                    <span>${date}</span>
-                    <span>${emp}</span>
-                    <span>${fonc}</span>
-                </div>
-                <div style="font-size: 0.9em; color: #444; margin-top: 2px;">
-                    ${desc}
+        paper.innerHTML = `
+            <div class="cv-header-line" style="display:flex; align-items:center;">
+                ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
+                <div style="flex:1;">
+                    <h1 style="margin:0; font-size:1.8em;">${document.getElementById('nom').value || 'Prénom NOM'}</h1>
+                    <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} ${document.getElementById('tel').value && document.getElementById('email').value ? '|' : ''} ${document.getElementById('email').value}</p>
+                    <p style="margin:0; font-size:0.8em;">${document.getElementById('adresse').value}</p>
                 </div>
             </div>
+            
+            <div class="cv-badge">${document.getElementById('metier').value || 'MÉTIER'}</div>
+            
+            ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
+            
+            <div class="grid">
+                <div>
+                    ${selectedSkills.tech.length > 0 ? `<h2>Savoir-Faire</h2><ul style="padding-left:15px; font-size:0.85em; margin:0;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}
+                </div>
+                <div>
+                    ${selectedSkills.hum.length > 0 ? `<h2>Compétences Sociales</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
+                    ${langues ? `<h2 style="margin-top:10px;">Langues</h2><p style="font-size:0.85em; margin:0;">${langues}</p>` : ''}
+                </div>
+            </div>
+            
+            ${experiences.length > 0 ? `<h2>Expériences Professionnelles</h2><div style="font-size:0.9em;">${experiences.map(e => `<div style="margin-bottom:10px;">${formatLines(e)}</div>`).join('')}</div>` : ''}
+            
+            ${formations.length > 0 ? `<h2>Formations</h2><div style="font-size:0.9em;">${formations.map(f => `<div style="margin-bottom:8px;">${formatLines(f)}</div>`).join('')}</div>` : ''}
+            
+            ${interets ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em; margin:0;">${interets}</p>` : ''}
         `;
+        
+        document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
+        document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
     }
-});
 
-    // 3. Suite du CV (Remplacer tout votre bloc actuel par celui-ci)
-    paper.innerHTML += `<h2>Formations</h2>`;
-    const eduGroups = document.querySelectorAll('.edu-group');
-    eduGroups.forEach(group => {
-        const date = group.querySelector('.edu-date').value;
-        const org = group.querySelector('.edu-org').value;
-        const intitule = group.querySelector('.edu-intitule').value;
-        const mod = group.querySelector('.edu-module').value;
-
-        if(date || org || intitule || mod) {
-            paper.innerHTML += `
-                <div style="margin-bottom: 8px;">
-                    <p style="margin:0;"><b>${date}</b> - ${org}</p>
-                    <p style="margin:0;"><b>${intitule}</b> ${mod ? `(Module: ${mod})` : ''}</p>
-                </div>
-            `;
-        }
-    });
-
-    if(interets) {
-        paper.innerHTML += `<h2>Centres d'intérêt</h2><p style="font-size:0.9em; margin:0;">${interets}</p>`;
-    }
     function saveData() {
         const fullData = {
             nom: document.getElementById('nom').value, tel: document.getElementById('tel').value,
@@ -355,15 +305,6 @@
     }
 
     window.onload = init;
-    function addExp() {
-    const container = document.getElementById('exp-inputs');
-    const newGroup = container.firstElementChild.cloneNode(true);
-    
-    // Vider les champs du nouveau bloc cloné
-    newGroup.querySelectorAll('input, textarea').forEach(el => el.value = '');
-    
-    container.appendChild(newGroup);
-}
 </script>
 </body>
 </html>
