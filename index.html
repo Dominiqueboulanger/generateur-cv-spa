@@ -196,6 +196,7 @@
         document.getElementById('metier').value = d.metier || '';
         document.getElementById('profil').value = d.profil || '';
         document.getElementById('interets').value = d.interets || '';
+        if(d.genre) document.getElementById('genre').value = d.genre;
         if(d.photoSize) document.getElementById('photo-size').value = d.photoSize;
         selectedSkills.tech = d.tech || [];
         selectedSkills.hum = d.hum || [];
