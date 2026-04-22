@@ -282,7 +282,25 @@ update();
                 </div>
             </div>
             
-            ${experiences.length > 0 ? `<h2>Expériences Professionnelles</h2><div style="font-size:0.9em;">${experiences.map(e => `<div style="margin-bottom:10px;">${formatLines(e)}</div>`).join('')}</div>` : ''}
+// Remplacez la ligne qui génère les expériences par ce bloc :
+paper.innerHTML += `<h2>Expériences Professionnelles</h2>`;
+const expGroups = document.querySelectorAll('.exp-group');
+expGroups.forEach(group => {
+    const date = group.querySelector('.exp-date').value;
+    const emp = group.querySelector('.exp-employeur').value;
+    const fonc = group.querySelector('.exp-fonction').value;
+    const desc = group.querySelector('.exp-desc').value;
+    
+    if(date || emp || fonc || desc) {
+        paper.innerHTML += `
+            <div style="margin-bottom: 10px;">
+                <p style="margin:0;"><b>${date}</b> - ${emp}</p>
+                <p style="margin:0;"><b>${fonc}</b></p>
+                <p style="margin:0; font-size: 0.9em; color: #444;">${desc}</p>
+            </div>
+        `;
+    }
+});
             
             ${formations.length > 0 ? `<h2>Formations</h2><div style="font-size:0.9em;">${formations.map(f => `<div style="margin-bottom:8px;">${formatLines(f)}</div>`).join('')}</div>` : ''}
             
