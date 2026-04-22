@@ -199,17 +199,17 @@
         // Même en cas d'erreur, on tente de mettre à jour le CV
         update();
     }
-}
+} // <--- CETTE ACCOLADE FERME BIEN LA FONCTION init()
 
-    async function loadRemoteModel() {
-        if(confirm("Charger le modèle exemple ?")) {
-            try {
-                const response = await fetch('./modele_cv.json?v=' + Date.now());
-                const d = await response.json();
-                applyDataToForm(d);
-            } catch(e) { alert("modele_cv.json introuvable."); }
-        }
+async function loadRemoteModel() {
+    if(confirm("Charger le modèle exemple ?")) {
+        try {
+            const response = await fetch('./modele_cv.json?v=' + Date.now());
+            const d = await response.json();
+            applyDataToForm(d);
+        } catch(e) { alert("modele_cv.json introuvable."); }
     }
+}
 
     function applyDataToForm(d) {
         document.getElementById('nom').value = d.nom || '';
