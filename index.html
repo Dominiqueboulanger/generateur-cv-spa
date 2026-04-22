@@ -262,57 +262,74 @@
     }
 
     function update() {
-        const paper = document.getElementById('cv-paper');
-        const experiences = Array.from(document.querySelectorAll('.exp-in')).map(i => i.value).filter(v => v);
-        const formations = Array.from(document.querySelectorAll('.edu-in')).map(i => i.value).filter(v => v);
-        const size = document.getElementById('photo-size').value;
-        const profil = document.getElementById('profil').value;
-        const interets = document.getElementById('interets').value;
-        const langues = document.getElementById('langues').value;
-        const eduGroups = document.querySelectorAll('.edu-group');
-        let formationsHtml = "";
-        eduGroups.forEach(group => {
+    const paper = document.getElementById('cv-paper');
+    const size = document.getElementById('photo-size').value;
+    const profil = document.getElementById('profil').value;
+    const interets = document.getElementById('interets').value;
+    const langues = document.getElementById('langues').value;
+
+    // --- Gestion des Formations (Logique existante) ---
+    const eduGroups = document.querySelectorAll('.edu-group');
+    let formationsHtml = "";
+    eduGroups.forEach(group => {
         const text = group.querySelector('.edu-in').value;
         const mod = group.querySelector('.selModules').value;
         if(text) {
             formationsHtml += `<div style="margin-bottom:8px;">${formatLines(text)} ${mod ? `<br><i>Module: ${mod}</i>` : ''}</div>`;
         }
     });
-        paper.innerHTML = `
-            <div class="cv-header-line" style="display:flex; align-items:center;">
-                ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
-                <div style="flex:1;">
-                    <h1 style="margin:0; font-size:1.8em;">${document.getElementById('nom').value || 'Prénom NOM'}</h1>
-                    <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} ${document.getElementById('tel').value && document.getElementById('email').value ? '|' : ''} ${document.getElementById('email').value}</p>
-                    <p style="margin:0; font-size:0.8em;">${document.getElementById('adresse').value}</p>
-                </div>
-            </div>
-            
-            <div class="cv-badge">${document.getElementById('metier').value || 'MÉTIER'}</div>
-            
-            ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
-            
-            <div class="grid">
-                <div>
-                    ${selectedSkills.tech.length > 0 ? `<h2>Savoir-Faire</h2><ul style="padding-left:15px; font-size:0.85em; margin:0;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}
-                </div>
-                <div>
-                    ${selectedSkills.hum.length > 0 ? `<h2>Compétences Sociales</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
-                    ${langues ? `<h2 style="margin-top:10px;">Langues</h2><p style="font-size:0.85em; margin:0;">${langues}</p>` : ''}
-                </div>
-            </div>
-            
-            ${experiences.length > 0 ? `<h2>Expériences Professionnelles</h2><div style="font-size:0.9em;">${experiences.map(e => `<div style="margin-bottom:10px;">${formatLines(e)}</div>`).join('')}</div>` : ''}
-            
-            ${formationsHtml ? `<h2>Formations</h2><div style="font-size:0.9em;">${formationsHtml}</div>` : ''}
-            
-            ${interets ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em; margin:0;">${interets}</p>` : ''}
-        `;
-        
-        document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
-        document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
-    }
 
+    // --- Gestion des Expériences (Nouvelle logique alignée) ---
+    const expGroups = document.querySelectorAll('.exp-group');
+    let experiencesHtml = "";
+    expGroups.forEach(group => {
+        const inputs = group.querySelectorAll('input'); // Date, Employeur, Intitulé
+        const details = group.querySelector('.exp-in').value;
+        // On affiche seulement si au moins un champ est rempli
+        if(inputs[0].value || inputs[1].value || inputs[2].value || details) {
+            experiencesHtml += `<div style="margin-bottom:10px;">
+                <b style="color:var(--main-color);">${inputs[0].value} ${inputs[0].value && inputs[1].value ? ' - ' : ''} ${inputs[1].value}</b><br>
+                <span class="cv-item-title">${inputs[2].value}</span>
+                <div style="font-size:0.9em; margin-top:2px;">${details.replace(/\n/g, '<br>')}</div>
+            </div>`;
+        }
+    });
+
+    // --- Construction du CV ---
+    paper.innerHTML = `
+        <div class="cv-header-line" style="display:flex; align-items:center;">
+            ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
+            <div style="flex:1;">
+                <h1 style="margin:0; font-size:1.8em;">${document.getElementById('nom').value || 'Prénom NOM'}</h1>
+                <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} ${document.getElementById('tel').value && document.getElementById('email').value ? '|' : ''} ${document.getElementById('email').value}</p>
+                <p style="margin:0; font-size:0.8em;">${document.getElementById('adresse').value}</p>
+            </div>
+        </div>
+        
+        <div class="cv-badge">${document.getElementById('metier').value || 'MÉTIER'}</div>
+        
+        ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
+        
+        <div class="grid">
+            <div>
+                ${selectedSkills.tech.length > 0 ? `<h2>Savoir-Faire</h2><ul style="padding-left:15px; font-size:0.85em; margin:0;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}
+            </div>
+            <div>
+                ${selectedSkills.hum.length > 0 ? `<h2>Compétences Sociales</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
+                ${langues ? `<h2 style="margin-top:10px;">Langues</h2><p style="font-size:0.85em; margin:0;">${langues}</p>` : ''}
+            </div>
+        </div>
+        
+        ${experiencesHtml ? `<h2>Expériences Professionnelles</h2><div style="font-size:0.9em;">${experiencesHtml}</div>` : ''}
+        
+        ${formationsHtml ? `<h2>Formations</h2><div style="font-size:0.9em;">${formationsHtml}</div>` : ''}
+        
+        ${interets ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em; margin:0;">${interets}</p>` : ''}
+    `;
+    
+    document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
+    document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
+}
     function saveData() {
         const fullData = {
             nom: document.getElementById('nom').value, tel: document.getElementById('tel').value,
