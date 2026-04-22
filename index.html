@@ -280,6 +280,15 @@
     const profil = document.getElementById('profil').value;
     const interets = document.getElementById('interets').value;
     const langues = document.getElementById('langues').value;
+    const genre = document.getElementById('genre').value;
+    const selectMetier = document.getElementById('metier');
+    const codeMetier = selectMetier.value;
+
+    // Récupération intelligente du nom du métier selon le genre
+    let metierFinal = "MÉTIER";
+    if (codeMetier && metiersRef[codeMetier]) {
+        metierFinal = metiersRef[codeMetier][genre]; // Accède directement à "m" ou "f"
+    }
     
     // --- Gestion du Genre et Métier ---
     const genre = document.getElementById('genre').value;
