@@ -158,6 +158,7 @@
 
 <script>
     let repoData = {};
+    let metiersRef = {}; // <--- AJOUTEZ CETTE LIGNE ICI
     let selectedSkills = { tech: [], hum: [] };
     let photoData = "";
 
@@ -167,10 +168,10 @@
     }
 
    async function init() {
-    try {
-        // 1. Chargement du fichier des libellés de métiers
-        const respM = await fetch('metiers.json?v=' + Date.now());
-        metiersRef = await respM.json();
+    async function init() {
+        try {
+            const respM = await fetch('metiers.json?v=' + Date.now());
+            metiersRef = await respM.json(); // <--- REMOVE 'const' ICI : on utilise la variable globale
         
         // 2. Remplissage automatique du menu déroulant #metier
         const select = document.getElementById('metier');
