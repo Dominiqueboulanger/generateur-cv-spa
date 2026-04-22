@@ -371,6 +371,7 @@
             tech: selectedSkills.tech, hum: selectedSkills.hum, photoSize: document.getElementById('photo-size').value,
             exp: Array.from(document.querySelectorAll('.exp-in')).map(i => i.value),
             edu: Array.from(document.querySelectorAll('.edu-in')).map(i => i.value), photo: photoData
+            genre: document.getElementById('genre').value, // Ajout de cette ligne
         };
         const blob = new Blob([JSON.stringify(fullData)], {type: 'application/json'});
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
