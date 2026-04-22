@@ -311,16 +311,28 @@
     }
 });
 
-    // 3. Suite du CV
-    paper.innerHTML += `
-        ${formations.length > 0 ? `<h2>Formations</h2><div style="font-size:0.9em;">${formations.map(f => `<div style="margin-bottom:8px;">${formatLines(f)}</div>`).join('')}</div>` : ''}
-        ${interets ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em; margin:0;">${interets}</p>` : ''}
-    `;
+    // 3. Suite du CV (Remplacer tout votre bloc actuel par celui-ci)
+    paper.innerHTML += `<h2>Formations</h2>`;
+    const eduGroups = document.querySelectorAll('.edu-group');
+    eduGroups.forEach(group => {
+        const date = group.querySelector('.edu-date').value;
+        const org = group.querySelector('.edu-org').value;
+        const intitule = group.querySelector('.edu-intitule').value;
+        const mod = group.querySelector('.edu-module').value;
 
-    document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
-    document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
-}
+        if(date || org || intitule || mod) {
+            paper.innerHTML += `
+                <div style="margin-bottom: 8px;">
+                    <p style="margin:0;"><b>${date}</b> - ${org}</p>
+                    <p style="margin:0;"><b>${intitule}</b> ${mod ? `(Module: ${mod})` : ''}</p>
+                </div>
+            `;
+        }
+    });
 
+    if(interets) {
+        paper.innerHTML += `<h2>Centres d'intérêt</h2><p style="font-size:0.9em; margin:0;">${interets}</p>`;
+    }
     function saveData() {
         const fullData = {
             nom: document.getElementById('nom').value, tel: document.getElementById('tel').value,
