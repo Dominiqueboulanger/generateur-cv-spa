@@ -249,67 +249,62 @@ update();
         return `${title}${rest}`;
     }
 
-    function update() {
-        const paper = document.getElementById('cv-paper');
-        const experiences = Array.from(document.querySelectorAll('.exp-in')).map(i => i.value).filter(v => v);
-        const formations = Array.from(document.querySelectorAll('.edu-in')).map(i => i.value).filter(v => v);
-        const size = document.getElementById('photo-size').value;
-        const profil = document.getElementById('profil').value;
-        const interets = document.getElementById('interets').value;
-        const langues = document.getElementById('langues').value;
+  function update() {
+    const paper = document.getElementById('cv-paper');
+    const formations = Array.from(document.querySelectorAll('.edu-in')).map(i => i.value).filter(v => v);
+    const size = document.getElementById('photo-size').value;
+    const profil = document.getElementById('profil').value;
+    const interets = document.getElementById('interets').value;
+    const langues = document.getElementById('langues').value;
 
-        paper.innerHTML = `
-            <div class="cv-header-line" style="display:flex; align-items:center;">
-                ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
-                <div style="flex:1;">
-                    <h1 style="margin:0; font-size:1.8em;">${document.getElementById('nom').value || 'Prénom NOM'}</h1>
-                    <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} ${document.getElementById('tel').value && document.getElementById('email').value ? '|' : ''} ${document.getElementById('email').value}</p>
-                    <p style="margin:0; font-size:0.8em;">${document.getElementById('adresse').value}</p>
-                </div>
+    // 1. En-tête et haut du CV
+    paper.innerHTML = `
+        <div class="cv-header-line" style="display:flex; align-items:center;">
+            ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
+            <div style="flex:1;">
+                <h1 style="margin:0; font-size:1.8em;">${document.getElementById('nom').value || 'Prénom NOM'}</h1>
+                <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} ${document.getElementById('tel').value && document.getElementById('email').value ? '|' : ''} ${document.getElementById('email').value}</p>
+                <p style="margin:0; font-size:0.8em;">${document.getElementById('adresse').value}</p>
             </div>
-            
-            <div class="cv-badge">${document.getElementById('metier').value || 'MÉTIER'}</div>
-            
-            ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
-            
-            <div class="grid">
-                <div>
-                    ${selectedSkills.tech.length > 0 ? `<h2>Savoir-Faire</h2><ul style="padding-left:15px; font-size:0.85em; margin:0;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}
-                </div>
-                <div>
-                    ${selectedSkills.hum.length > 0 ? `<h2>Compétences Sociales</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
-                    ${langues ? `<h2 style="margin-top:10px;">Langues</h2><p style="font-size:0.85em; margin:0;">${langues}</p>` : ''}
-                </div>
+        </div>
+        <div class="cv-badge">${document.getElementById('metier').value || 'MÉTIER'}</div>
+        ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
+        <div class="grid">
+            <div>${selectedSkills.tech.length > 0 ? `<h2>Savoir-Faire</h2><ul style="padding-left:15px; font-size:0.85em; margin:0;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}</div>
+            <div>${selectedSkills.hum.length > 0 ? `<h2>Compétences Sociales</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
+                 ${langues ? `<h2 style="margin-top:10px;">Langues</h2><p style="font-size:0.85em; margin:0;">${langues}</p>` : ''}
             </div>
-            
-// Remplacez la ligne qui génère les expériences par ce bloc :
-paper.innerHTML += `<h2>Expériences Professionnelles</h2>`;
-const expGroups = document.querySelectorAll('.exp-group');
-expGroups.forEach(group => {
-    const date = group.querySelector('.exp-date').value;
-    const emp = group.querySelector('.exp-employeur').value;
-    const fonc = group.querySelector('.exp-fonction').value;
-    const desc = group.querySelector('.exp-desc').value;
-    
-    if(date || emp || fonc || desc) {
-        paper.innerHTML += `
-            <div style="margin-bottom: 10px;">
-                <p style="margin:0;"><b>${date}</b> - ${emp}</p>
-                <p style="margin:0;"><b>${fonc}</b></p>
-                <p style="margin:0; font-size: 0.9em; color: #444;">${desc}</p>
-            </div>
-        `;
-    }
-});
-            
-            ${formations.length > 0 ? `<h2>Formations</h2><div style="font-size:0.9em;">${formations.map(f => `<div style="margin-bottom:8px;">${formatLines(f)}</div>`).join('')}</div>` : ''}
-            
-            ${interets ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em; margin:0;">${interets}</p>` : ''}
-        `;
-        
-        document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
-        document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
-    }
+        </div>
+        <h2>Expériences Professionnelles</h2>
+    `;
+
+    // 2. Logique des expériences (ajoutée après le innerHTML)
+    const expGroups = document.querySelectorAll('.exp-group');
+    expGroups.forEach(group => {
+        const date = group.querySelector('.exp-date').value;
+        const emp = group.querySelector('.exp-employeur').value;
+        const fonc = group.querySelector('.exp-fonction').value;
+        const desc = group.querySelector('.exp-desc').value;
+        if(date || emp || fonc || desc) {
+            paper.innerHTML += `
+                <div style="margin-bottom: 12px;">
+                    <p style="margin:0;"><b>${date}</b> - ${emp}</p>
+                    <p style="margin:0;"><b>${fonc}</b></p>
+                    <p style="margin:0; font-size: 0.9em; color: #444;">${desc}</p>
+                </div>
+            `;
+        }
+    });
+
+    // 3. Suite du CV
+    paper.innerHTML += `
+        ${formations.length > 0 ? `<h2>Formations</h2><div style="font-size:0.9em;">${formations.map(f => `<div style="margin-bottom:8px;">${formatLines(f)}</div>`).join('')}</div>` : ''}
+        ${interets ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em; margin:0;">${interets}</p>` : ''}
+    `;
+
+    document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
+    document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
+}
 
     function saveData() {
         const fullData = {
