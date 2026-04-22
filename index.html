@@ -114,16 +114,17 @@
         <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
     </div>
 
-   <h2>🎓 Formations</h2>
-    <div id="edu-inputs">
-        <textarea class="edu-in" placeholder="Diplôme..." oninput="update()" rows="2"></textarea>
-        
-        <label style="font-size: 0.8em;">Module associé :</label>
-        <select id="selModules" onchange="update()">
+  <h2>🎓 Formations</h2>
+<div id="edu-inputs">
+    <div class="edu-group">
+        <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
+        <label>Module associé :</label>
+        <select class="selModules" onchange="update()">
             <option value="">-- Choisir un module --</option>
         </select>
     </div>
-    <button onclick="addEdu()">+ Ajouter une formation</button>
+</div>
+<button onclick="addEdu()">+ Ajouter une formation</button>
 
     <h2>🎨 Centres d'intérêt</h2>
     <input type="text" id="interets" placeholder="Loisirs..." oninput="update()">
@@ -210,13 +211,17 @@
         // Remplir les Compétences Sociales
         repoData[m].Humaines.forEach(h => sH.innerHTML += `<option value="${h}">${h}</option>`);
         
-        // Remplir les Modules (si le métier en possède)
-        if (sMod && repoData[m].modules) {
+        // Dans loadSkills, remplacez la partie modules par :
+    const allModuleSelects = document.querySelectorAll('.selModules');
+    allModuleSelects.forEach(select => {
+        const currentVal = select.value;
+        select.innerHTML = '<option value="">-- Choisir un module --</option>';
+        if (repoData[m].modules) {
             repoData[m].modules.forEach(mod => {
-                sMod.innerHTML += `<option value="${mod}">${mod}</option>`;
+                select.innerHTML += `<option value="${mod}" ${mod === currentVal ? 'selected' : ''}>${mod}</option>`;
             });
         }
-    }
+    });
     update();
 }
 
@@ -252,7 +257,15 @@
         const profil = document.getElementById('profil').value;
         const interets = document.getElementById('interets').value;
         const langues = document.getElementById('langues').value;
-
+        const eduGroups = document.querySelectorAll('.edu-group');
+        let formationsHtml = "";
+        eduGroups.forEach(group => {
+        const text = group.querySelector('.edu-in').value;
+        const mod = group.querySelector('.selModules').value;
+        if(text) {
+            formationsHtml += `<div style="margin-bottom:8px;">${formatLines(text)} ${mod ? `<br><i>Module: ${mod}</i>` : ''}</div>`;
+        }
+    });
         paper.innerHTML = `
             <div class="cv-header-line" style="display:flex; align-items:center;">
                 ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
@@ -308,7 +321,20 @@
         reader.onload = (e) => { applyDataToForm(JSON.parse(e.target.result)); };
         reader.readAsText(event.target.files[0]);
     }
-
+    function addEdu() {
+    const container = document.getElementById('edu-inputs');
+    const newGroup = document.createElement('div');
+    newGroup.className = 'edu-group';
+    newGroup.innerHTML = `
+        <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
+        <label>Module associé :</label>
+        <select class="selModules" onchange="update()">
+            <option value="">-- Choisir un module --</option>
+        </select>
+    `;
+    container.appendChild(newGroup);
+    loadSkills(); 
+}
     window.onload = init;
 </script>
 </body>
