@@ -351,37 +351,52 @@
         reader.readAsText(event.target.files[0]);
     }
     function addEdu() {
-    const container = document.getElementById('edu-inputs');
-    const newGroup = document.createElement('div');
-    newGroup.className = 'edu-group';
-    newGroup.style = "border:1px solid #eee; padding:10px; margin-bottom:10px; border-radius:8px;";
-    newGroup.innerHTML = `
-        <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
-        <label>Ajouter des modules :</label>
-        <select class="selModules" onchange="addModuleTag(this)">
-            <option value="">-- Choisir un module --</option>
-        </select>
-        <div class="tagsModules" style="margin-top:5px;"></div>
-    `;
-    container.appendChild(newGroup);
-    loadSkills(); 
-}
-    window.onload = init;
+        const container = document.getElementById('edu-inputs');
+        const newGroup = document.createElement('div');
+        newGroup.className = 'edu-group';
+        newGroup.style = "border:1px solid #eee; padding:10px; margin-bottom:10px; border-radius:8px;";
+        newGroup.innerHTML = `
+            <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
+            <label>Ajouter des modules :</label>
+            <select class="selModules" onchange="addModuleTag(this)">
+                <option value="">-- Choisir un module --</option>
+            </select>
+            <div class="tagsModules" style="margin-top:5px;"></div>
+        `;
+        container.appendChild(newGroup);
+        loadSkills(); 
+    }
+
     function addExp() {
-    const container = document.getElementById('exp-inputs');
-    const newGroup = document.createElement('div');
-    newGroup.className = 'exp-group';
-    newGroup.style.marginBottom = "10px";
-    newGroup.innerHTML = `
-        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
-            <input type="text" placeholder="Date" oninput="update()">
-            <input type="text" placeholder="Employeur" oninput="update()">
-            <input type="text" placeholder="Intitulé" oninput="update()">
-        </div>
-        <textarea class="exp-in" placeholder="Détails" oninput="update()" rows="2"></textarea>
-    `;
-    container.appendChild(newGroup);
-}
+        const container = document.getElementById('exp-inputs');
+        const newGroup = document.createElement('div');
+        newGroup.className = 'exp-group';
+        newGroup.style.marginBottom = "10px";
+        newGroup.innerHTML = `
+            <div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                <input type="text" placeholder="Date" oninput="update()">
+                <input type="text" placeholder="Employeur" oninput="update()">
+                <input type="text" placeholder="Intitulé" oninput="update()">
+            </div>
+            <textarea class="exp-in" placeholder="Détails" oninput="update()" rows="2"></textarea>
+        `;
+        container.appendChild(newGroup);
+    }
+
+    function addModuleTag(selectElement) {
+        const val = selectElement.value;
+        if (!val) return;
+        const container = selectElement.parentElement.querySelector('.tagsModules');
+        if (container.innerHTML.includes(val)) return;
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.innerHTML = `${val}<b onclick="this.parentElement.remove(); update()">✕</b>`;
+        container.appendChild(span);
+        selectElement.value = "";
+        update();
+    }
+
+    window.onload = init;
 </script>
 </body>
 </html>
