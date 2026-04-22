@@ -275,7 +275,8 @@
         const text = group.querySelector('.edu-in').value;
         const mod = group.querySelector('.selModules').value;
         if(text) {
-            formationsHtml += `<div style="margin-bottom:8px;">${formatLines(text)} ${mod ? `<br><i>Module: ${mod}</i>` : ''}</div>`;
+            // Remplacez cette ligne dans la boucle de update() :
+    formationsHtml += `<div style="margin-bottom:8px;">${formatLines(text)} ${tags.length > 0 ? `<br><i>${tags.join(', ')}</i>` : ''}</div>`;
         }
     });
 
@@ -384,18 +385,29 @@
     }
 
     function addModuleTag(selectElement) {
-        const val = selectElement.value;
-        if (!val) return;
-        const container = selectElement.parentElement.querySelector('.tagsModules');
-        if (container.innerHTML.includes(val)) return;
-        const span = document.createElement('span');
-        span.className = 'tag';
-        span.innerHTML = `${val}<b onclick="this.parentElement.remove(); update()">✕</b>`;
-        container.appendChild(span);
-        selectElement.value = "";
-        update();
+    const val = selectElement.value;
+    if (!val) return;
+    
+    // On cible le conteneur de tags spécifique à ce bloc de formation
+    const container = selectElement.parentElement.querySelector('.tagsModules');
+    
+    // Vérification anti-doublon (pour ne pas ajouter 2 fois le même module)
+    const existingTags = Array.from(container.querySelectorAll('.tag')).map(t => t.innerText.replace('✕', '').trim());
+    if (existingTags.includes(val)) {
+        alert("Ce module est déjà ajouté.");
+        return;
     }
 
+    // Création du tag
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.style.marginRight = "5px"; // Petit espacement visuel
+    span.innerHTML = `${val}<b onclick="this.parentElement.remove(); update()" style="cursor:pointer; margin-left:5px;">✕</b>`;
+    container.appendChild(span);
+    
+    selectElement.value = ""; // Reset du menu déroulant
+    update(); // Mise à jour immédiate du CV
+}
     window.onload = init;
 </script>
 </body>
