@@ -175,14 +175,20 @@
         
         // 2. Remplissage automatique du menu déroulant #metier
         const select = document.getElementById('metier');
-        // On vide le contenu actuel et on remet l'option par défaut
         select.innerHTML = '<option value="">-- Choisir le métier --</option>';
-        
-        // On boucle sur chaque clé du fichier JSON
-        for (const code in metiersRef) {
+    
+        // Données intégrées en dur
+        const metiersData = {
+            "EF": { "m": "Employé Familial", "f": "Employée Familiale" },
+            "ADVD": { "m": "Assistant de Vie", "f": "Assistante de Vie" },
+            "Garde": { "m": "Assistant Parental", "f": "Assistante Parentale" }
+        };
+    
+        // CORRECTION : On boucle sur metiersData, PAS sur metiersRef
+        for (const code in metiersData) {
             const option = document.createElement('option');
-            option.value = code; // Exemple: "Garde"
-            option.text = metiersRef[code]['m']; // Utilise la forme masculine pour l'affichage dans la liste
+            option.value = code; 
+            option.text = metiersData[code]['m']; // Utilise la forme masculine
             select.add(option);
         }
         
