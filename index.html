@@ -308,7 +308,7 @@
         metierFinal = metiersRef[codeMetier][genre] || "MÉTIER";
     } else if (codeMetier) {
         // Fallback si le JSON n'est pas encore chargé
-        metierFinal = selectMetier.options[selectMetier.selectedIndex].text;
+        metierFinal = metiersRef[codeMetier][genre] || metiersRef[codeMetier]['m'];
     }
 
     // --- RESTE DU CODE (expériences, formations, etc.) ---
