@@ -169,42 +169,35 @@
 
   
     async function init() {
-        try {
-            const respM = await fetch('metiers.json?v=' + Date.now());
-            metiersRef = await respM.json(); // <--- REMOVE 'const' ICI : on utilise la variable globale
-        
-        // 2. Remplissage automatique du menu déroulant #metier
-        const select = document.getElementById('metier');
-        select.innerHTML = '<option value="">-- Choisir le métier --</option>';
-    
-        // Données intégrées en dur
-        const metiersData = {
-            "EF": { "m": "Employé Familial", "f": "Employée Familiale" },
-            "ADVD": { "m": "Assistant de Vie", "f": "Assistante de Vie" },
-            "Garde": { "m": "Assistant Parental", "f": "Assistante Parentale" }
-        };
-    
-        // CORRECTION : On boucle sur metiersData, PAS sur metiersRef
-        for (const code in metiersData) {
-            const option = document.createElement('option');
-            option.value = code; 
-            option.text = metiersData[code]['m']; // Utilise la forme masculine
-            select.add(option);
-        }
-        
-        // 3. Chargement du fichier des compétences
+    const select = document.getElementById('metier');
+    select.innerHTML = '<option value="">-- Choisir le métier --</option>';
+
+    // Les données sont ici, en dur
+    const metiersData = {
+        "EF": { "m": "Employé Familial", "f": "Employée Familiale" },
+        "ADVD": { "m": "Assistant de Vie", "f": "Assistante de Vie" },
+        "Garde": { "m": "Assistant Parental", "f": "Assistante Parentale" }
+    };
+
+    // 1. Remplissage du menu
+    for (const code in metiersData) {
+        const option = document.createElement('option');
+        option.value = code;
+        option.text = metiersData[code]['m'];
+        select.add(option);
+    }
+
+    // 2. Chargement des compétences (seul bloc try/catch nécessaire)
+    try {
         const response = await fetch('competences_SPE_par_metier.json?v=' + Date.now());
         repoData = await response.json();
-        
-        // 4. Mise à jour de l'affichage
-        update();
-        
     } catch(e) {
-        console.error("Erreur de chargement des données :", e);
-        // Même en cas d'erreur, on tente de mettre à jour le CV
-        update();
+        console.error("Fichier de compétences introuvable :", e);
     }
-}
+
+    // 3. Mise à jour finale
+    update();
+} // <--- C'est ici que la fonction init se ferme, et il ne doit RIEN y avoir après.
 
     async function loadRemoteModel() {
         if(confirm("Charger le modèle exemple ?")) {
