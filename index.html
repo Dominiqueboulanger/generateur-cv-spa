@@ -115,11 +115,17 @@
     <div id="tagsHum"></div>
 
     <h2>💼 Expériences Professionnelles</h2>
-    <div id="exp-inputs">
-        <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
-        <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
-        <textarea class="exp-in" placeholder="Poste (en gras)&#10;Détails" oninput="update()" rows="2"></textarea>
+<div id="exp-inputs">
+    <div class="exp-group" style="margin-bottom: 10px;">
+        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <input type="text" placeholder="Date" oninput="update()">
+            <input type="text" placeholder="Employeur" oninput="update()">
+            <input type="text" placeholder="Intitulé" oninput="update()">
+        </div>
+        <textarea class="exp-in" placeholder="Détails" oninput="update()" rows="2"></textarea>
     </div>
+</div>
+<button onclick="addExp()" class="btn" style="background:#3498db; width:100%; margin-bottom: 20px;">+ Ajouter une expérience</button>
 
   <h2>🎓 Formations</h2>
 <div id="edu-inputs">
