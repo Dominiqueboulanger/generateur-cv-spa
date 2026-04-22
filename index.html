@@ -167,23 +167,25 @@
     }
 
    async function init() {
+    async function init() {
     try {
-        // 1. Chargement du fichier des libellés de métiers
         const respM = await fetch('metiers.json?v=' + Date.now());
         metiersRef = await respM.json();
+        console.log("JSON Métiers chargé :", metiersRef); // <--- AJOUTEZ CECI
         
-        // 2. Remplissage automatique du menu déroulant #metier
         const select = document.getElementById('metier');
-        // On vide le contenu actuel et on remet l'option par défaut
         select.innerHTML = '<option value="">-- Choisir le métier --</option>';
         
-        // On boucle sur chaque clé du fichier JSON
         for (const code in metiersRef) {
             const option = document.createElement('option');
-            option.value = code; // Exemple: "Garde"
-            option.text = metiersRef[code]['m']; // Utilise la forme masculine pour l'affichage dans la liste
+            option.value = code; 
+            option.text = metiersRef[code]['m'];
             select.add(option);
+            console.log("Option ajoutée :", code, "->", metiersRef[code]['m']); // <--- AJOUTEZ CECI
         }
+        // ... reste du code
+    } catch(e) { console.error("Erreur init", e); }
+}
         
         // 3. Chargement du fichier des compétences
         const response = await fetch('competences_SPE_par_metier.json?v=' + Date.now());
