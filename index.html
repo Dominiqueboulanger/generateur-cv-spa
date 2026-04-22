@@ -270,7 +270,19 @@
     const profil = document.getElementById('profil').value;
     const interets = document.getElementById('interets').value;
     const langues = document.getElementById('langues').value;
+    // 1. Récupération des valeurs
+    const genre = document.getElementById('genre').value;
+    const selectMetier = document.getElementById('metier');
+    const texteMetier = selectMetier.options[selectMetier.selectedIndex].text;
 
+    // 2. Adaptation du texte métier
+    let metierFinal = (selectMetier.value === "") ? "MÉTIER" : texteMetier;
+
+    if (genre === 'f') {
+        metierFinal = metierFinal.replace("Assistant de Vie", "Assistante de Vie")
+                             .replace("Employé Familial", "Employée Familiale")
+                             .replace("Garde d'enfants", "Assistante Parentale");
+    }
     // --- Gestion des Formations ---
     const eduGroups = document.querySelectorAll('.edu-group');
     let formationsHtml = "";
@@ -317,7 +329,7 @@
             </div>
         </div>
         
-        <div class="cv-badge">${document.getElementById('metier').value || 'MÉTIER'}</div>
+        <div class="cv-badge">${metierFinal}</div>
         
         ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
         
