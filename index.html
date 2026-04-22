@@ -354,12 +354,14 @@
     const container = document.getElementById('edu-inputs');
     const newGroup = document.createElement('div');
     newGroup.className = 'edu-group';
+    newGroup.style = "border:1px solid #eee; padding:10px; margin-bottom:10px; border-radius:8px;";
     newGroup.innerHTML = `
         <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
-        <label>Module associé :</label>
-        <select class="selModules" onchange="update()">
+        <label>Ajouter des modules :</label>
+        <select class="selModules" onchange="addModuleTag(this)">
             <option value="">-- Choisir un module --</option>
         </select>
+        <div class="tagsModules" style="margin-top:5px;"></div>
     `;
     container.appendChild(newGroup);
     loadSkills(); 
