@@ -280,21 +280,27 @@ update();
 
     // 2. Logique des expériences (ajoutée après le innerHTML)
     const expGroups = document.querySelectorAll('.exp-group');
-    expGroups.forEach(group => {
-        const date = group.querySelector('.exp-date').value;
-        const emp = group.querySelector('.exp-employeur').value;
-        const fonc = group.querySelector('.exp-fonction').value;
-        const desc = group.querySelector('.exp-desc').value;
-        if(date || emp || fonc || desc) {
-            paper.innerHTML += `
-                <div style="margin-bottom: 12px;">
-                    <p style="margin:0;"><b>${date}</b> - ${emp}</p>
-                    <p style="margin:0;"><b>${fonc}</b></p>
-                    <p style="margin:0; font-size: 0.9em; color: #444;">${desc}</p>
+   expGroups.forEach(group => {
+    const date = group.querySelector('.exp-date').value;
+    const emp = group.querySelector('.exp-employeur').value;
+    const fonc = group.querySelector('.exp-fonction').value;
+    const desc = group.querySelector('.exp-desc').value;
+    
+    if(date || emp || fonc || desc) {
+        paper.innerHTML += `
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; gap: 10px; font-weight: bold;">
+                    <span>${date}</span>
+                    <span>${emp}</span>
+                    <span>${fonc}</span>
                 </div>
-            `;
-        }
-    });
+                <div style="font-size: 0.9em; color: #444; margin-top: 2px;">
+                    ${desc}
+                </div>
+            </div>
+        `;
+    }
+});
 
     // 3. Suite du CV
     paper.innerHTML += `
