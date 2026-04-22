@@ -293,61 +293,36 @@
         return `${title}${rest}`;
     }
 
-    function update() {
+async function update() {
+    // 1. Vos variables de base
     const paper = document.getElementById('cv-paper');
     const size = document.getElementById('photo-size').value;
     const profil = document.getElementById('profil').value;
     const interets = document.getElementById('interets').value;
     const langues = document.getElementById('langues').value;
-    async function update() {
+    
+    // 2. Vos variables de métier et genre
     const selectMetier = document.getElementById('metier');
     const genre = document.getElementById('genre').value;
     const codeMetier = selectMetier.value; 
 
-    console.log("--- Début mise à jour ---");
-    console.log("Code métier sélectionné (value) :", codeMetier);
-    console.log("Genre sélectionné :", genre);
+    // 3. Gestion du métier (Version propre et fusionnée)
+    let metierFinal = "MÉTIER"; // Déclaration unique
     
-    // Vérifions si le code existe bien dans notre objet chargé
-    if (metiersRef[codeMetier]) {
-        console.log("Libellé trouvé dans JSON :", metiersRef[codeMetier][genre]);
-    } else {
-        console.log("ATTENTION : Aucune correspondance trouvée pour ce code !");
-    }
-    
-    // ... reste de votre code qui affiche le badge
-}
-
-    // --- SEULE GESTION DU MÉTIER : Via metiersRef ---
-    let metierFinal = "MÉTIER";
     if (codeMetier && metiersRef[codeMetier]) {
-        metierFinal = metiersRef[codeMetier][genre] || "MÉTIER";
+        metierFinal = metiersRef[codeMetier][genre] || metiersRef[codeMetier]['m'];
+        console.log("Libellé trouvé dans JSON :", metierFinal);
     } else if (codeMetier) {
-        // Fallback si le JSON n'est pas encore chargé
+        // Fallback si le code est là mais pas dans le JSON
         metierFinal = selectMetier.options[selectMetier.selectedIndex].text;
     }
 
     // --- RESTE DU CODE (expériences, formations, etc.) ---
     const eduGroups = document.querySelectorAll('.edu-group');
-    let formationsHtml = "";
-    eduGroups.forEach(group => {
-        const text = group.querySelector('.edu-in').value;
-        const tagElements = group.querySelectorAll('.tagsModules .tag');
-        const tags = Array.from(tagElements).map(t => t.innerText.replace('✕', '').trim());
-        if(text) {
-            formationsHtml += `<div style="margin-bottom:8px;">${formatLines(text)} ${tags.length > 0 ? `<br><i style="font-size:0.9em;">${tags.join(', ')}</i>` : ''}</div>`;
-        }
-    });
-
+    // ... votre code formationsHtml inchangé ...
+    
     const expGroups = document.querySelectorAll('.exp-group');
-    let experiencesHtml = "";
-    expGroups.forEach(group => {
-        const inputs = group.querySelectorAll('input'); 
-        const details = group.querySelector('.exp-in').value;
-        if(inputs[0].value || inputs[1].value || inputs[2].value || details) {
-            experiencesHtml += `<div style="margin-bottom:10px;"><b style="color:var(--main-color);">${inputs[0].value} ${inputs[0].value && inputs[1].value ? ' - ' : ''} ${inputs[1].value}</b><br><span class="cv-item-title">${inputs[2].value}</span><div style="font-size:0.9em; margin-top:2px;">${details.replace(/\n/g, '<br>')}</div></div>`;
-        }
-    });
+    // ... votre code experiencesHtml inchangé ...
 
     // --- CONSTRUCTION DU CV ---
     paper.innerHTML = `
