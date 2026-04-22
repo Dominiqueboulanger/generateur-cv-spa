@@ -158,7 +158,6 @@
 
 <script>
     let repoData = {};
-    let metiersRef = {}; // Ajout de la déclaration manquante
     let selectedSkills = { tech: [], hum: [] };
     let photoData = "";
 
@@ -167,30 +166,38 @@
         update();
     }
 
-    async function init() {
-        try {
-            const respM = await fetch('metiers.json?v=' + Date.now());
-            metiersRef = await respM.json();
-            
-            const select = document.getElementById('metier');
-            select.innerHTML = '<option value="">-- Choisir le métier --</option>';
-            
-            for (const code in metiersRef) {
-                const option = document.createElement('option');
-                option.value = code; 
-                option.text = metiersRef[code]['m'];
-                select.add(option);
-            }
-
-            const response = await fetch('competences_SPE_par_metier.json?v=' + Date.now());
-            repoData = await response.json();
-            
-            update(); 
-        } catch(e) { 
-            console.error("Erreur de chargement des données :", e);
-            update();
+   async function init() {
+    try {
+        // 1. Chargement du fichier des libellés de métiers
+        const respM = await fetch('metiers.json?v=' + Date.now());
+        metiersRef = await respM.json();
+        
+        // 2. Remplissage automatique du menu déroulant #metier
+        const select = document.getElementById('metier');
+        // On vide le contenu actuel et on remet l'option par défaut
+        select.innerHTML = '<option value="">-- Choisir le métier --</option>';
+        
+        // On boucle sur chaque clé du fichier JSON
+        for (const code in metiersRef) {
+            const option = document.createElement('option');
+            option.value = code; // Exemple: "Garde"
+            option.text = metiersRef[code]['m']; // Utilise la forme masculine pour l'affichage dans la liste
+            select.add(option);
         }
+        
+        // 3. Chargement du fichier des compétences
+        const response = await fetch('competences_SPE_par_metier.json?v=' + Date.now());
+        repoData = await response.json();
+        
+        // 4. Mise à jour de l'affichage
+        update();
+        
+    } catch(e) {
+        console.error("Erreur de chargement des données :", e);
+        // Même en cas d'erreur, on tente de mettre à jour le CV
+        update();
     }
+}
 
     async function loadRemoteModel() {
         if(confirm("Charger le modèle exemple ?")) {
@@ -230,28 +237,35 @@
         reader.readAsDataURL(e.target.files[0]);
     }
 
-    function loadSkills() {
-        const m = document.getElementById('metier').value;
-        const sT = document.getElementById('selTech');
-        const sH = document.getElementById('selHum');
-        sT.innerHTML = sH.innerHTML = '<option value="">-- Sélectionner --</option>';
+   function loadSkills() {
+    const m = document.getElementById('metier').value;
+    const sT = document.getElementById('selTech');
+    const sH = document.getElementById('selHum');
+    
+    // Réinitialisation des menus
+    sT.innerHTML = sH.innerHTML = '<option value="">-- Sélectionner --</option>';
 
-        if(m && repoData[m]) {
-            repoData[m].Techniques.forEach(t => sT.innerHTML += `<option value="${t}">${t}</option>`);
-            repoData[m].Humaines.forEach(h => sH.innerHTML += `<option value="${h}">${h}</option>`);
-            const allModuleSelects = document.querySelectorAll('.selModules');
-            allModuleSelects.forEach(select => {
-                const currentVal = select.value;
-                select.innerHTML = '<option value="">-- Choisir un module --</option>';
-                if (repoData[m].modules) {
-                    repoData[m].modules.forEach(mod => {
-                        select.innerHTML += `<option value="${mod}" ${mod === currentVal ? 'selected' : ''}>${mod}</option>`;
-                    });
-                }
-            });
-        }
-        update();
+    if(m && repoData[m]) {
+        // Remplir les Techniques
+        repoData[m].Techniques.forEach(t => sT.innerHTML += `<option value="${t}">${t}</option>`);
+        
+        // Remplir les Compétences Sociales
+        repoData[m].Humaines.forEach(h => sH.innerHTML += `<option value="${h}">${h}</option>`);
+        
+        // Mise à jour des modules
+        const allModuleSelects = document.querySelectorAll('.selModules');
+        allModuleSelects.forEach(select => {
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">-- Choisir un module --</option>';
+            if (repoData[m].modules) {
+                repoData[m].modules.forEach(mod => {
+                    select.innerHTML += `<option value="${mod}" ${mod === currentVal ? 'selected' : ''}>${mod}</option>`;
+                });
+            }
+        });
     }
+    update();
+} // Cette accolade ferme bien la fonction loadSkills
 
     function addTag(type, el) {
         if(el.value && !selectedSkills[type].includes(el.value)) {
@@ -277,31 +291,161 @@
         return `${title}${rest}`;
     }
 
-    async function update() {
-        const paper = document.getElementById('cv-paper');
-        const size = document.getElementById('photo-size').value;
-        const profil = document.getElementById('profil').value;
-        const interets = document.getElementById('interets').value;
-        const langues = document.getElementById('langues').value;
-        const selectMetier = document.getElementById('metier');
-        const genre = document.getElementById('genre').value;
-        const codeMetier = selectMetier.value; 
+    function update() {
+    const paper = document.getElementById('cv-paper');
+    const size = document.getElementById('photo-size').value;
+    const profil = document.getElementById('profil').value;
+    const interets = document.getElementById('interets').value;
+    const langues = document.getElementById('langues').value;
+    const genre = document.getElementById('genre').value; // 'm' ou 'f'
+    const selectMetier = document.getElementById('metier');
+    const codeMetier = selectMetier.value;
 
-        let metierFinal = "MÉTIER";
-        if (codeMetier && metiersRef[codeMetier]) {
-            metierFinal = metiersRef[codeMetier][genre] || metiersRef[codeMetier]['m'];
-        } else if (codeMetier) {
-            metierFinal = selectMetier.options[selectMetier.selectedIndex].text;
-        }
-
-        // Reconstruction du HTML simplifiée pour l'exemple
-        paper.innerHTML = `...`; // (Gardez votre logique interne ici)
-        // ... (Suite de votre logique d'affichage)
+    // --- SEULE GESTION DU MÉTIER : Via metiersRef ---
+    let metierFinal = "MÉTIER";
+    if (codeMetier && metiersRef[codeMetier]) {
+        metierFinal = metiersRef[codeMetier][genre] || "MÉTIER";
+    } else if (codeMetier) {
+        // Fallback si le JSON n'est pas encore chargé
+        metierFinal = selectMetier.options[selectMetier.selectedIndex].text;
     }
 
+    // --- RESTE DU CODE (expériences, formations, etc.) ---
+    const eduGroups = document.querySelectorAll('.edu-group');
+    let formationsHtml = "";
+    eduGroups.forEach(group => {
+        const text = group.querySelector('.edu-in').value;
+        const tagElements = group.querySelectorAll('.tagsModules .tag');
+        const tags = Array.from(tagElements).map(t => t.innerText.replace('✕', '').trim());
+        if(text) {
+            formationsHtml += `<div style="margin-bottom:8px;">${formatLines(text)} ${tags.length > 0 ? `<br><i style="font-size:0.9em;">${tags.join(', ')}</i>` : ''}</div>`;
+        }
+    });
+
+    const expGroups = document.querySelectorAll('.exp-group');
+    let experiencesHtml = "";
+    expGroups.forEach(group => {
+        const inputs = group.querySelectorAll('input');
+        const details = group.querySelector('.exp-in').value;
+        if(inputs[0].value || inputs[1].value || inputs[2].value || details) {
+            experiencesHtml += `<div style="margin-bottom:10px;"><b style="color:var(--main-color);">${inputs[0].value} ${inputs[0].value && inputs[1].value ? ' - ' : ''} ${inputs[1].value}</b><br><span class="cv-item-title">${inputs[2].value}</span><div style="font-size:0.9em; margin-top:2px;">${details.replace(/\n/g, '<br>')}</div></div>`;
+        }
+    });
+
+    // --- CONSTRUCTION DU CV ---
+    paper.innerHTML = `
+        <div class="cv-header-line" style="display:flex; align-items:center;">
+            ${photoData ? `<img src="${photoData}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; margin-right:20px; border:2px solid var(--main-color);">` : ''}
+            <div style="flex:1;">
+                <h1 style="margin:0; font-size:1.8em;">${document.getElementById('nom').value || 'Prénom NOM'}</h1>
+                <p style="margin:2px 0; font-size:0.9em; color:#555;">${document.getElementById('tel').value} ${document.getElementById('tel').value && document.getElementById('email').value ? '|' : ''} ${document.getElementById('email').value}</p>
+                <p style="margin:0; font-size:0.8em;">${document.getElementById('adresse').value}</p>
+            </div>
+        </div>
+        <div class="cv-badge">${metierFinal}</div>
+        ${profil ? `<p class="cv-quote">${profil}</p>` : ''}
+        <div class="grid">
+            <div>${selectedSkills.tech.length > 0 ? `<h2>Savoir-Faire</h2><ul style="padding-left:15px; font-size:0.85em; margin:0;">${selectedSkills.tech.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}</div>
+            <div>${selectedSkills.hum.length > 0 ? `<h2>Compétences Sociales</h2><div style="margin-top:5px;">${selectedSkills.hum.map(h => `<span class="be-item">• ${h}</span>`).join('')}</div>` : ''}
+            ${langues ? `<h2 style="margin-top:10px;">Langues</h2><p style="font-size:0.85em; margin:0;">${langues}</p>` : ''}</div>
+        </div>
+        ${experiencesHtml ? `<h2>Expériences Professionnelles</h2><div style="font-size:0.9em;">${experiencesHtml}</div>` : ''}
+        ${formationsHtml ? `<h2>Formations</h2><div style="font-size:0.9em;">${formationsHtml}</div>` : ''}
+        ${interets ? `<h2>Centres d'intérêt</h2><p style="font-size:0.9em; margin:0;">${interets}</p>` : ''}
+    `;
+    
+    document.getElementById('tagsTech').innerHTML = selectedSkills.tech.map(t => `<span class="tag">${t}<b onclick="selectedSkills.tech=selectedSkills.tech.filter(x=>x!=='${t}');update()">✕</b></span>`).join('');
+    document.getElementById('tagsHum').innerHTML = selectedSkills.hum.map(h => `<span class="tag">${h}<b onclick="selectedSkills.hum=selectedSkills.hum.filter(x=>x!=='${h}');update()">✕</b></span>`).join('');
+}
+    function saveData() {
+        const fullData = {
+            nom: document.getElementById('nom').value, 
+            tel: document.getElementById('tel').value,
+            email: document.getElementById('email').value, 
+            adresse: document.getElementById('adresse').value,
+            langues: document.getElementById('langues').value, 
+            metier: document.getElementById('metier').value, 
+            profil: document.getElementById('profil').value, 
+            interets: document.getElementById('interets').value, 
+            tech: selectedSkills.tech, 
+            hum: selectedSkills.hum, 
+            photoSize: document.getElementById('photo-size').value,
+            exp: Array.from(document.querySelectorAll('.exp-in')).map(i => i.value),
+            edu: Array.from(document.querySelectorAll('.edu-in')).map(i => i.value), 
+            photo: photoData,
+            genre: document.getElementById('genre').value // Pas de virgule après si c'est le dernier
+        };
+        const blob = new Blob([JSON.stringify(fullData)], {type: 'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `cv_${fullData.nom.replace(/\s/g, '_') || 'brouillon'}.json`; a.click();
+    }
+
+    function loadData(event) {
+        const reader = new FileReader();
+        reader.onload = (e) => { applyDataToForm(JSON.parse(e.target.result)); };
+        reader.readAsText(event.target.files[0]);
+    }
+    function addEdu() {
+        const container = document.getElementById('edu-inputs');
+        const newGroup = document.createElement('div');
+        newGroup.className = 'edu-group';
+        newGroup.style = "border:1px solid #eee; padding:10px; margin-bottom:10px; border-radius:8px;";
+        newGroup.innerHTML = `
+            <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
+            <label>Ajouter des modules :</label>
+            <select class="selModules" onchange="addModuleTag(this)">
+                <option value="">-- Choisir un module --</option>
+            </select>
+            <div class="tagsModules" style="margin-top:5px;"></div>
+        `;
+        container.appendChild(newGroup);
+        loadSkills(); 
+    }
+
+    function addExp() {
+        const container = document.getElementById('exp-inputs');
+        const newGroup = document.createElement('div');
+        newGroup.className = 'exp-group';
+        newGroup.style.marginBottom = "10px";
+        newGroup.innerHTML = `
+            <div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                <input type="text" placeholder="Date" oninput="update()">
+                <input type="text" placeholder="Employeur" oninput="update()">
+                <input type="text" placeholder="Intitulé" oninput="update()">
+            </div>
+            <textarea class="exp-in" placeholder="Détails" oninput="update()" rows="2"></textarea>
+        `;
+        container.appendChild(newGroup);
+    }
+
+    function addModuleTag(selectElement) {
+    const val = selectElement.value;
+    if (!val) return;
+    
+    // On cible le conteneur de tags spécifique à ce bloc de formation
+    const container = selectElement.parentElement.querySelector('.tagsModules');
+    
+    // Vérification anti-doublon (pour ne pas ajouter 2 fois le même module)
+    const existingTags = Array.from(container.querySelectorAll('.tag')).map(t => t.innerText.replace('✕', '').trim());
+    if (existingTags.includes(val)) {
+        alert("Ce module est déjà ajouté.");
+        return;
+    }
+
+    // Création du tag
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.style.marginRight = "5px"; // Petit espacement visuel
+    span.innerHTML = `${val}<b onclick="this.parentElement.remove(); update()" style="cursor:pointer; margin-left:5px;">✕</b>`;
+    container.appendChild(span);
+    
+    selectElement.value = ""; // Reset du menu déroulant
+    update(); // Mise à jour immédiate du CV
+}
     window.onload = init;
 </script>
 </body>
 </html>
+
 
 
