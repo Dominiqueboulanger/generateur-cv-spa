@@ -436,18 +436,26 @@
     }
 
     function addModuleTag(selectElement) {
-    const val = selectElement.value;
-    if (!val) return;
+    const value = selectElement.value;
+    if (!value) return;
+
+    // 1. Trouver le conteneur de tags du bloc actuel
+    // On cherche le parent '.edu-group' puis on descend dans '.tagsModules'
+    const parentGroup = selectElement.closest('.edu-group');
+    const tagsContainer = parentGroup.querySelector('.tagsModules');
+
+    // 2. Créer le tag
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.innerHTML = `${value} <span onclick="this.parentElement.remove(); update();" style="cursor:pointer;">✕</span>`;
     
-    // On cible le conteneur de tags spécifique à ce bloc de formation
-    const container = selectElement.parentElement.querySelector('.tagsModules');
+    // 3. Ajouter au conteneur
+    tagsContainer.appendChild(tag);
     
-    // Vérification anti-doublon (pour ne pas ajouter 2 fois le même module)
-    const existingTags = Array.from(container.querySelectorAll('.tag')).map(t => t.innerText.replace('✕', '').trim());
-    if (existingTags.includes(val)) {
-        alert("Ce module est déjà ajouté.");
-        return;
-    }
+    // 4. IMPORTANT : Remettre le menu à zéro et rafraîchir le CV
+    selectElement.value = ""; 
+    update();
+}
 
     // Création du tag
     const span = document.createElement('span');
