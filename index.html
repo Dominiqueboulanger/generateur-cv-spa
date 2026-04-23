@@ -134,12 +134,12 @@
   <h2>🎓 Formations</h2>
 <div id="edu-inputs">
     <div class="edu-group">
-        <textarea class="edu-in" placeholder="Diplôme (en gras)&#10;École et Année" oninput="update()" rows="2"></textarea>
-        <label>Module associé :</label>
-        <select class="selModules" onchange="update()">
-            <option value="">-- Choisir un module --</option>
-        </select>
-    </div>
+    <textarea class="edu-in" ...></textarea>
+    <label>Module associé :</label>
+    <select class="selModules" onchange="addModuleTag(this)">
+        <option value="">-- Choisir un module --</option>
+    </select>
+    <div class="tagsModules"></div> 
 </div>
 <button onclick="addEdu()">+ Ajouter une formation</button>
 
